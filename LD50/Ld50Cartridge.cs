@@ -83,7 +83,7 @@ namespace LD50
 
             var gameActor = game.AddActor("Game");
 
-            var spellCaster = new SpellCaster(gameActor, party, spells);
+            var spellCaster = new SpellCaster(gameActor, party, spells, new Cooldown(0.25f));
             new BattleSystem(gameActor, party);
 
             var castingBarActor = layoutActors.GetActor("casting-bar");

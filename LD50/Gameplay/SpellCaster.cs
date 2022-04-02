@@ -15,14 +15,16 @@ namespace LD50.Gameplay
         private readonly TweenAccessors<float> percentTweenable;
         private readonly ISpell[] spells;
         private readonly Party party;
+        private readonly Cooldown globalCooldown;
 
-        public SpellCaster(Actor actor, Party party, ISpell[] spells) : base(actor)
+        public SpellCaster(Actor actor, Party party, ISpell[] spells, Cooldown globalCooldown) : base(actor)
         {
             this.spells = spells;
             this.party = party;
             this.partyTuples = new List<PartyMemberTuple>();
             this.castingTween = new TweenChain();
             this.percentTweenable = new TweenAccessors<float>(0);
+            this.globalCooldown = globalCooldown;
         }
 
         public float Percent => this.percentTweenable.CurrentValue;
@@ -85,15 +87,21 @@ namespace LD50.Gameplay
             if (!this.castingTween.IsDone())
             {
                 MachinaClient.Print("Casting in progress");
-                // todo: buffer next spell
+                // todo: buffer next spell if there's less than a half second cast time remaining
                 return false;
             }
 
+            if (!this.globalCooldown.IsReady())
+            {
+                // todo: buffer next spell if there's less than half second remaining
+                MachinaClient.Print("global cooldown");
+                return false;
+            }
+            
             if (!spell.Cooldown.IsReady())
             {
                 MachinaClient.Print("that spell is on cooldown");
-                // if spell is on cooldown, return
-                // todo: buffer next spell
+                // todo: buffer next spell if there's less than a half second remaining
                 return false;
             }
 
@@ -111,6 +119,7 @@ namespace LD50.Gameplay
             {
                 InProgressSpell.Spell.Execute(InProgressSpell.TargetPartyMember, this.party);
                 InProgressSpell.Spell.Cooldown.Start();
+                this.globalCooldown.Start();
             }
             
             if (!InProgressSpell.Spell.IsInstant)

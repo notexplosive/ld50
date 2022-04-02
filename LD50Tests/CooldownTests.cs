@@ -18,7 +18,7 @@ namespace LD50Tests
             var party = new Party();
             
             var actor = new Actor("Test Actor", null);
-            var spellCaster = new SpellCaster(actor, party, spells);
+            var spellCaster = new SpellCaster(actor, party, spells, new Cooldown(0));
             
             spellCaster.TryToCastSpell(0).Should().BeTrue();
             spellCaster.TryToCastSpell(0).Should().BeFalse();
@@ -37,10 +37,27 @@ namespace LD50Tests
             var party = new Party();
             
             var actor = new Actor("Test Actor", null);
-            var spellCaster = new SpellCaster(actor, party, spells);
+            var spellCaster = new SpellCaster(actor, party, spells, new Cooldown(0));
             
             spellCaster.TryToCastSpell(0).Should().BeTrue();
             spellCaster.TryToCastSpell(1).Should().BeTrue();
+        }
+
+        [Fact]
+        public void global_cooldown_works()
+        {
+            var spells = new ISpell[]
+            {
+                new WholePartySpell("Test Spell", 0f, 0, 10, EmptyBuff.Create(), 0f),
+                new WholePartySpell("Test Spell", 0f, 0, 10, EmptyBuff.Create(), 0f)
+            };
+            var party = new Party();
+            
+            var actor = new Actor("Test Actor", null);
+            var spellCaster = new SpellCaster(actor, party, spells, new Cooldown(0.5f));
+            
+            spellCaster.TryToCastSpell(0).Should().BeTrue();
+            spellCaster.TryToCastSpell(1).Should().BeFalse();
         }
     }
 }
