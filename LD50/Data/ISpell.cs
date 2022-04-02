@@ -11,6 +11,7 @@ namespace LD50.Data
         public int ManaCost { get; }
         public int HealingAmountWhenComplete { get; }
         public IBuff BuffAppliedWhenComplete { get; }
+        public Cooldown Cooldown { get; }
         bool IsInstant => CastDuration == 0f;
         void Execute(PartyMember targetPartyMember, Party party);
     }

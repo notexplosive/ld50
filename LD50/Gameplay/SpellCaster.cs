@@ -27,6 +27,14 @@ namespace LD50.Gameplay
 
         public float Percent => this.percentTweenable.CurrentValue;
 
+        public override void Update(float dt)
+        {
+            foreach (var spell in this.spells)
+            {
+                spell.Cooldown.Update(dt);
+            }
+        }
+
         public override void OnKey(Keys key, ButtonState state, ModifierKeys modifiers)
         {
             if (state == ButtonState.Pressed)
@@ -63,7 +71,7 @@ namespace LD50.Gameplay
             }
         }
 
-        private void TryToCastSpell(int i)
+        public bool TryToCastSpell(int i)
         {
             var hoveredPartyMember = GetHoveredPartyMember();
 
@@ -78,22 +86,33 @@ namespace LD50.Gameplay
             {
                 MachinaClient.Print("Casting in progress");
                 // todo: buffer next spell
-                return;
+                return false;
             }
-            
-            // if spell is on cooldown, return
-            // todo: buffer next spell
-            
+
+            if (!spell.Cooldown.IsReady())
+            {
+                MachinaClient.Print("that spell is on cooldown");
+                // if spell is on cooldown, return
+                // todo: buffer next spell
+                return false;
+            }
+
             if (hoveredPartyMember == null && spell is SingleTargetSpell)
             {
                 MachinaClient.Print("No target");    
-                return;
+                return false;
             }
 
             MachinaClient.Print("Casting spell", spell.Name);
 
             InProgressSpell = new PendingSpell(hoveredPartyMember, spell);
 
+            void Cast()
+            {
+                InProgressSpell.Spell.Execute(InProgressSpell.TargetPartyMember, this.party);
+                InProgressSpell.Spell.Cooldown.Start();
+            }
+            
             if (!InProgressSpell.Spell.IsInstant)
             {
                 this.castingTween.Clear();
@@ -103,9 +122,15 @@ namespace LD50.Gameplay
                     () =>
                     {
                         this.percentTweenable.setter(0f);
-                        InProgressSpell.Spell.Execute(InProgressSpell.TargetPartyMember, this.party);
+                        Cast();
                     });
             }
+            else
+            {
+                Cast();
+            }
+
+            return true;
         }
 
         public PendingSpell InProgressSpell { get; private set; }

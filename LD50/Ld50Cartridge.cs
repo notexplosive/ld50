@@ -33,11 +33,11 @@ namespace LD50
 
             var spells = new ISpell[]
             {
-                new SingleTargetSpell("Fast Heal", 1.5f, 30, 20, EmptyBuff.Create()),
-                new SingleTargetSpell("Slow Heal", 6f, 50, 50, EmptyBuff.Create()),
-                new SingleTargetSpell("Shield", 0.5f, 40, 0, ShieldBuff.Create(5f, 100)),
-                new SingleTargetSpell("Heal Over Time", 0.5f, 40, 0, HealOverTimeBuff.Create(6f, 35)),
-                new WholePartySpell("AoE Heal", 0f, 50, 25, EmptyBuff.Create()),
+                new SingleTargetSpell("Fast Heal", 1.5f, 30, 20, EmptyBuff.Create(), 0f),
+                new SingleTargetSpell("Slow Heal", 6f, 50, 50, EmptyBuff.Create(), 0f),
+                new SingleTargetSpell("Shield", 0.5f, 40, 0, ShieldBuff.Create(5f, 100), 10f),
+                new SingleTargetSpell("Heal Over Time", 0.5f, 40, 0, HealOverTimeBuff.Create(6f, 35), 8f),
+                new WholePartySpell("AoE Heal", 0f, 50, 25, EmptyBuff.Create(), 40f),
                 // new SingleTargetSpell("Clear Debuff"),
                 // new SingleTargetSpell("Revive")
             };

@@ -4,13 +4,14 @@ namespace LD50.Data
 {
     public class WholePartySpell : ISpell 
     {
-        public WholePartySpell(string name, float castDuration, int manaCost, int healingAmountWhenComplete, IBuff buffAppliedWhenComplete)
+        public WholePartySpell(string name, float castDuration, int manaCost, int healingAmountWhenComplete, IBuff buffAppliedWhenComplete, float cooldown)
         {
             Name = name;
             ManaCost = manaCost;
             HealingAmountWhenComplete = healingAmountWhenComplete;
             BuffAppliedWhenComplete = buffAppliedWhenComplete;
             CastDuration = castDuration;
+            Cooldown = new Cooldown(cooldown);
         }
 
         public string Name { get; }
@@ -18,6 +19,8 @@ namespace LD50.Data
         public int ManaCost { get; }
         public int HealingAmountWhenComplete { get; }
         public IBuff BuffAppliedWhenComplete { get; }
+        public Cooldown Cooldown { get; }
+
         public void Execute(PartyMember targetPartyMember, Party party)
         {
             foreach (var member in party.AllMembers())
