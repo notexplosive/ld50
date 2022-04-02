@@ -1,4 +1,5 @@
-﻿using LD50.Data;
+﻿using System.Collections.Generic;
+using LD50.Data;
 using LD50.Gameplay;
 using LD50.Renderer;
 using Machina.Data;
@@ -30,15 +31,28 @@ namespace LD50
                 "party-member-5"
             };
 
-            var spellLayoutNames = new[]
+            var spells = new ISpell[]
             {
-                "spell-1",
-                "spell-2",
-                "spell-3",
-                "spell-4",
-                "spell-5"
+                new SingleTargetSpell("Fast Heal", 1.5f, 30, 20, Buff.Empty()),
+                new SingleTargetSpell("Slow Heal", 6f, 50, 50, Buff.Empty()),
+                new SingleTargetSpell("Shield", 0.5f, 40, 0, Buff.Shield()),
+                new SingleTargetSpell("Heal Over Time", 0.5f, 40, 0, Buff.HealOverTime(6f, 35)),
+                new WholePartySpell("AoE Heal", 0f, 50, 25, Buff.Empty()),
+                // new SingleTargetSpell("Clear Debuff"),
+                // new SingleTargetSpell("Revive")
             };
 
+            LayoutNode[] SpellNodes()
+            {
+                var result = new List<LayoutNode>();
+                foreach (var spell in spells)
+                {
+                    result.Add(LayoutNode.Leaf(spell.Name, LayoutSize.FixedAspectRatio(1, 1)));
+                }
+
+                return result.ToArray();
+            }
+            
             var layout = LayoutNode.VerticalParent("screen", LayoutSize.Pixels(new Point(1600, 900)),
                 new LayoutStyle(new Point(25, 25)),
                 LayoutNode.Spacer(50),
@@ -53,11 +67,7 @@ namespace LD50
                 LayoutNode.Leaf("casting-bar", LayoutSize.StretchedHorizontally(25)),
                 LayoutNode.HorizontalParent("spells", LayoutSize.StretchedBoth(),
                     new LayoutStyle(new Point(25, 25), 15, Alignment.Center),
-                    LayoutNode.Leaf(spellLayoutNames[0], LayoutSize.FixedAspectRatio(1, 1)),
-                    LayoutNode.Leaf(spellLayoutNames[1], LayoutSize.FixedAspectRatio(1, 1)),
-                    LayoutNode.Leaf(spellLayoutNames[2], LayoutSize.FixedAspectRatio(1, 1)),
-                    LayoutNode.Leaf(spellLayoutNames[3], LayoutSize.FixedAspectRatio(1, 1)),
-                    LayoutNode.Leaf(spellLayoutNames[4], LayoutSize.FixedAspectRatio(1, 1))
+                    SpellNodes()
                 ),
                 LayoutNode.Spacer(50)
             );
@@ -73,16 +83,7 @@ namespace LD50
 
             var gameActor = game.AddActor("Game");
 
-            var spells = new ISpell[]
-            {
-                new SingleTargetSpell("Fast Heal", 1.5f, 30, 20, Buff.Empty()),
-                new SingleTargetSpell("Slow Heal", 6f, 50, 50, Buff.Empty()),
-                new SingleTargetSpell("Shield", 0.5f, 40, 0, Buff.Shield()),
-                new SingleTargetSpell("Heal Over Time", 0.5f, 25, 0, Buff.HealOverTime()),
-                new WholePartySpell("AoE Heal", 0f, 50, 25, Buff.Empty()),
-                // new SingleTargetSpell("Clear Debuff"),
-                // new SingleTargetSpell("Revive")
-            };
+            
             
             var spellCaster = new SpellCaster(gameActor, party, spells);
             new BattleSystem(gameActor, party);
@@ -100,9 +101,9 @@ namespace LD50
                 partyMemberIndex++;
             }
 
-            foreach (var name in spellLayoutNames)
+            foreach (var spell in spells)
             {
-                var spellRoot = layoutActors.GetActor(name);
+                var spellRoot = layoutActors.GetActor(spell.Name);
                 SpellInterface.CreateFromActor(spellRoot, spellCaster);
             }
         }

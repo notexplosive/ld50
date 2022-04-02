@@ -5,7 +5,6 @@ namespace LD50.Data
     public readonly struct PartyMemberStatus
     {
         private readonly int damageTaken;
-        private readonly Buffs appliedBuffs;
         public BaseStats BaseStats { get; }
         public int Health => BaseStats.MaxHealth - this.damageTaken;
 
@@ -13,12 +12,14 @@ namespace LD50.Data
         {
             BaseStats = baseStats;
             this.damageTaken = damageTaken;
-            this.appliedBuffs = appliedBuffs;
+            Buffs = appliedBuffs;
         }
+
+        public Buffs Buffs { get; }
 
         public PartyMemberStatus GetNext(float dt, int healsThisFrame, int damageThisFrame)
         {
-            var buffs = this.appliedBuffs.GetNext(dt);
+            var buffs = Buffs.GetNext(dt);
             healsThisFrame += buffs.GetHealingThisTick(dt);
             damageThisFrame += buffs.GetDamageThisTick(dt);
             var newDamageTaken = this.damageTaken - healsThisFrame + damageThisFrame;

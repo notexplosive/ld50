@@ -67,6 +67,13 @@ namespace LD50.Gameplay
         {
             var hoveredPartyMember = GetHoveredPartyMember();
 
+            if (i >= this.spells.Length)
+            {
+                MachinaClient.Print("no spell at that index", i);
+            }
+            
+            var spell = this.spells[i];
+
             if (!this.castingTween.IsDone())
             {
                 MachinaClient.Print("Casting in progress");
@@ -77,15 +84,15 @@ namespace LD50.Gameplay
             // if spell is on cooldown, return
             // todo: buffer next spell
             
-            if (hoveredPartyMember == null)
+            if (hoveredPartyMember == null && spell is SingleTargetSpell)
             {
                 MachinaClient.Print("No target");    
                 return;
             }
 
-            MachinaClient.Print("Casting spell", i);
+            MachinaClient.Print("Casting spell", spell.Name);
 
-            InProgressSpell = new PendingSpell(hoveredPartyMember, this.spells[i]);
+            InProgressSpell = new PendingSpell(hoveredPartyMember, spell);
 
             if (!InProgressSpell.Spell.IsInstant)
             {
