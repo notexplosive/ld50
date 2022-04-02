@@ -1,0 +1,27 @@
+
+IStructure
+    - Structure
+    - EmptyStructure (null)
+
+Floorplan
+    - Structures
+    - Available Space (HashSet of Points)
+
+Item
+
+Customer
+    - Public List - things they want and are looking for
+    - Secret List - things they want but don't explicity say
+
+
+Customer AI:
+    - While public list is incomplete:
+        - Pick an unseen square adjacent to a seen square walk to it
+        - If target item is in your line of sight, stop what you're doing and grab it
+    - Once public list is complete:
+        - Find the exit and leave
+
+Dynamics:
+- Certain Items are often bought together (Eggs + Milk, Eggs + Bread, Eggs + Flour)
+- Certain Items are popular on public lists (Eggs, Milk, Butter, Bread)
+- Certain Items are popular on secret lists (chocolate, candy)

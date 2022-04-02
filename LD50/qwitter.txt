@@ -1,0 +1,49 @@
+qwitter
+
+Make topics clickable
+
+Maybe just like redo the whole rendering system as components??
+
+Posting screen
+
+Reactions to post screen
+
+Agree with Post
+
+Disagree with post
+
+Users have teams that dictate their reaction
+
+Follower Count
+
+---
+
+- Scroll (to a page of random posts)
+- Agree with a post
+- Disagree with a post
+- Post about a Topic (hashtag)
+- Post about a User (person)
+
+> If you post things that people agree with, you get more Followers
+> If you post something people disagree with, you lose Followers
+> Each User has a "Team" that dictates their opinion on Topics
+
+Each post has an Emotion attached to it
+    - Laughing
+    - Happy
+    - Sad
+    - Meh
+    - Angry (gets the most engagement)
+
+When a new Topic happens, Users pick a side based on what Team they're on.
+    Each Team gets assigned an emotion, but some emotions are left out (ie: no one is mad about #Potatoes)
+    If you react in alignment with a team, that team will like your post and follow you
+    If you reach out of alignment with a team, members of that team are likely to unfollow you
+
+Sometimes a Person becomes a Topic, but otherwise they function exactly the same
+    This is just so you get Main Character'd at the end
+
+> When you make a Post, you see the reactions come in
+    > Gives you a sense of how effective the post was
+    > If you Post about a Topic that's been around for a while, there isn't much engagement
+    > Likewise, posting about a topic shortly after it becomes relevant gets lots of engagement
