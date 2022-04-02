@@ -11,7 +11,7 @@ namespace LD50.Renderer
     {
         public static void DrawTextContent(SpriteBatch spriteBatch, Rectangle textBounds, Post post, Depth depth)
         {
-            var boundedText = new BoundedText(textBounds.Size, Alignment.Center, Overflow.Ignore, post.Text);
+            var boundedText = new BoundedText(textBounds.Size, Alignment.Center, Overflow.Ignore, post.Content.Text);
             
             foreach (var item in boundedText.GetRenderedText())
             {
@@ -28,7 +28,7 @@ namespace LD50.Renderer
 
         public static Point EstimateSize(Post post, Point textBounds)
         {
-            var boundedText = new BoundedText(textBounds, Alignment.Center, Overflow.Ignore, post.Text);
+            var boundedText = new BoundedText(textBounds, Alignment.Center, Overflow.Ignore, post.Content.Text);
             return boundedText.UsedSize;
         }
     }

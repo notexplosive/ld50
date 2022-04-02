@@ -15,10 +15,17 @@ namespace LD50.Renderer
         {
             this.posts = new List<Post>();
 
-            this.posts.Add(new Post());
-            this.posts.Add(new Post());
-            this.posts.Add(new Post());
-            this.posts.Add(new Post());
+            var jake = new User("Jake", "Stevenson");
+            var alice = new User("Alice", "Mumford");
+
+            var rice = new Topic("rice");
+            var cheese = new Topic("cheese");
+            
+            
+            this.posts.Add(new Post(jake, new PostContent(Emotion.Happy, rice)));
+            this.posts.Add(new Post(alice, new PostContent(Emotion.Sad, rice)));
+            this.posts.Add(new Post(alice, new PostContent(Emotion.Happy, cheese)));
+            this.posts.Add(new Post(jake, new PostContent(Emotion.Happy, cheese)));
         }
 
         public override void Draw(SpriteBatch spriteBatch)

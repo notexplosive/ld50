@@ -7,15 +7,13 @@ namespace LD50.Gameplay
 {
     public class Post
     {
-        public FormattedText Text { get; }
-        
-        public Post()
+        public Post(User author, PostContent postContent)
         {
-            var fontMetrics = new SpriteFontMetrics(MachinaClient.DefaultStyle.uiElementFont);
-
-            Text = new FormattedText(
-                new FormattedTextFragment("I'm mad about ", fontMetrics, Color.White),
-                new FormattedTextFragment("#BabyEarth", fontMetrics, Color.LightBlue));
+            Content = postContent;
+            Author = author;
         }
+
+        public User Author { get; }
+        public PostContent Content { get; }
     }
 }
