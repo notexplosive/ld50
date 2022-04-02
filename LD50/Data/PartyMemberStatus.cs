@@ -13,8 +13,10 @@ namespace LD50.Data
             BaseStats = baseStats;
             this.damageTaken = damageTaken;
             Buffs = appliedBuffs;
+            IsDead = damageTaken >= BaseStats.MaxHealth;
         }
 
+        public bool IsDead { get; }
         public Buffs Buffs { get; }
 
         public PartyMemberStatus GetNext(float dt, int healsThisFrame, int damageThisFrame)

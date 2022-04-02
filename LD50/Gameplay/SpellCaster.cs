@@ -24,7 +24,7 @@ namespace LD50.Gameplay
             this.partyTuples = new List<PartyMemberTuple>();
             this.castingTween = new TweenChain();
             this.percentTweenable = new TweenAccessors<float>(0);
-            this.GlobalCooldown = globalCooldown;
+            GlobalCooldown = globalCooldown;
         }
 
         public float Percent => this.percentTweenable.CurrentValue;
@@ -36,7 +36,7 @@ namespace LD50.Gameplay
                 spell.Cooldown.Update(dt);
             }
             
-            this.GlobalCooldown.Update(dt);
+            GlobalCooldown.Update(dt);
         }
 
         public override void OnKey(Keys key, ButtonState state, ModifierKeys modifiers)
@@ -94,7 +94,7 @@ namespace LD50.Gameplay
                 return false;
             }
 
-            if (!this.GlobalCooldown.IsReady())
+            if (!GlobalCooldown.IsReady())
             {
                 // todo: buffer next spell if there's less than half second remaining
                 MachinaClient.Print("global cooldown");
@@ -117,7 +117,7 @@ namespace LD50.Gameplay
             MachinaClient.Print("Casting spell", spell.Name);
 
             InProgressSpell = new PendingSpell(hoveredPartyMember, spell);
-            this.GlobalCooldown.Start(); // gcd triggers when you START casting a spell
+            GlobalCooldown.Start(); // gcd triggers when you START casting a spell
             
             void Cast()
             {
@@ -157,7 +157,7 @@ namespace LD50.Gameplay
         {
             foreach (var tuple in this.partyTuples)
             {
-                if (tuple.hoverable.IsHovered)
+                if (tuple.hoverable.IsHovered && !tuple.partyMember.Status.IsDead)
                 {
                     return tuple.partyMember;
                 }
