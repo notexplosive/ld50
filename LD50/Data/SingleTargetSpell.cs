@@ -6,7 +6,7 @@ namespace LD50.Data
     {
         public string Name { get; }
 
-        public SingleTargetSpell(string name, float castDuration, int manaCost, int healingAmountWhenComplete, Buff buffAppliedWhenComplete)
+        public SingleTargetSpell(string name, float castDuration, int manaCost, int healingAmountWhenComplete, IBuff buffAppliedWhenComplete)
         {
             Name = name;
             ManaCost = manaCost;
@@ -18,7 +18,7 @@ namespace LD50.Data
         public float CastDuration { get; }
         public int ManaCost { get; }
         public int HealingAmountWhenComplete { get; }
-        public Buff BuffAppliedWhenComplete { get; }
+        public IBuff BuffAppliedWhenComplete { get; }
         
         public void Execute(PartyMember targetPartyMember, Party party)
         {

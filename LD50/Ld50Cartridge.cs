@@ -33,11 +33,11 @@ namespace LD50
 
             var spells = new ISpell[]
             {
-                new SingleTargetSpell("Fast Heal", 1.5f, 30, 20, Buff.Empty()),
-                new SingleTargetSpell("Slow Heal", 6f, 50, 50, Buff.Empty()),
-                new SingleTargetSpell("Shield", 0.5f, 40, 0, Buff.Shield()),
-                new SingleTargetSpell("Heal Over Time", 0.5f, 40, 0, Buff.HealOverTime(6f, 35)),
-                new WholePartySpell("AoE Heal", 0f, 50, 25, Buff.Empty()),
+                new SingleTargetSpell("Fast Heal", 1.5f, 30, 20, EmptyBuff.Create()),
+                new SingleTargetSpell("Slow Heal", 6f, 50, 50, EmptyBuff.Create()),
+                new SingleTargetSpell("Shield", 0.5f, 40, 0, ShieldBuff.Create(5f, 100)),
+                new SingleTargetSpell("Heal Over Time", 0.5f, 40, 0, HealOverTimeBuff.Create(6f, 35)),
+                new WholePartySpell("AoE Heal", 0f, 50, 25, EmptyBuff.Create()),
                 // new SingleTargetSpell("Clear Debuff"),
                 // new SingleTargetSpell("Revive")
             };
@@ -83,8 +83,6 @@ namespace LD50
 
             var gameActor = game.AddActor("Game");
 
-            
-            
             var spellCaster = new SpellCaster(gameActor, party, spells);
             new BattleSystem(gameActor, party);
 

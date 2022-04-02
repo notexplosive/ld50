@@ -4,20 +4,20 @@ namespace LD50.Gameplay
 {
     public class PartyMember
     {
-        private PartyMemberStatus status;
+        public PartyMemberStatus Status { get; private set; }
         private int pendingDamage;
         private int pendingHeals;
 
         public PartyMember(BaseStats baseStats)
         {
-            this.status = new PartyMemberStatus(baseStats, new Buffs());
+            Status = new PartyMemberStatus(baseStats, new Buffs());
         }
 
-        public float HealthPercent => (float)this.status.Health / this.status.BaseStats.MaxHealth;
+        public float HealthPercent => (float)Status.Health / Status.BaseStats.MaxHealth;
 
         public void Update(float dt)
         {
-            this.status = this.status.GetNext(dt, this.pendingHeals, this.pendingDamage);
+            Status = Status.GetNext(dt, this.pendingHeals, this.pendingDamage);
             this.pendingDamage = 0;
             this.pendingHeals = 0;
         }
@@ -32,9 +32,14 @@ namespace LD50.Gameplay
             this.pendingHeals += heal;
         }
 
-        public void GainBuff(Buff buff)
+        public void GainBuff(IBuff buff)
         {
-            this.status.Buffs.AddBuff(buff);
+            Status.Buffs.AddBuff(buff);
+        }
+
+        public Buffs GetBuffs()
+        {
+            return Status.GetBuffs();
         }
     }
 }

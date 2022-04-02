@@ -10,7 +10,7 @@ namespace LD50.Data
         public float CastDuration { get; }
         public int ManaCost { get; }
         public int HealingAmountWhenComplete { get; }
-        public Buff BuffAppliedWhenComplete { get; }
+        public IBuff BuffAppliedWhenComplete { get; }
         bool IsInstant => CastDuration == 0f;
         void Execute(PartyMember targetPartyMember, Party party);
     }

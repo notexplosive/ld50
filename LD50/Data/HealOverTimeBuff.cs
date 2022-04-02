@@ -1,12 +1,10 @@
-﻿using Machina.Engine;
-
-namespace LD50.Data
+﻿namespace LD50.Data
 {
-    public readonly struct Buff
+    public readonly struct HealOverTimeBuff : IBuff
     {
         private readonly float cachedHealAmount;
 
-        public Buff(float remainingDuration, int healthPerSecond, float cachedHealAmount = 0f)
+        public HealOverTimeBuff(float remainingDuration, int healthPerSecond, float cachedHealAmount = 0f)
         {
             RemainingDuration = remainingDuration;
             HealthPerSecond = healthPerSecond;
@@ -16,13 +14,13 @@ namespace LD50.Data
         public int HealthPerSecond { get; }
         public float RemainingDuration { get; }
 
-        public Buff GetNext(float dt)
+        public IBuff GetNext(float dt)
         {
             var healAmount = GetExactHealAmount(dt);
 
             var newCache = healAmount - (int) healAmount;
 
-            return new Buff(RemainingDuration - dt, HealthPerSecond, newCache);
+            return new HealOverTimeBuff(RemainingDuration - dt, HealthPerSecond, newCache);
         }
 
         public int GetHealAmount(float dt)
@@ -43,19 +41,9 @@ namespace LD50.Data
             return healAmount + this.cachedHealAmount;
         }
 
-        public static Buff Empty()
+        public static IBuff Create(float duration, int totalHealing)
         {
-            return new Buff();
-        }
-
-        public static Buff HealOverTime(float duration, int totalHealing)
-        {
-            return new Buff(duration, (int) (totalHealing / duration));
-        }
-
-        public static Buff Shield()
-        {
-            return new Buff();
+            return new HealOverTimeBuff(duration, (int) (totalHealing / duration));
         }
     }
 }

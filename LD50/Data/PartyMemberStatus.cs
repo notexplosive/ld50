@@ -19,13 +19,26 @@ namespace LD50.Data
 
         public PartyMemberStatus GetNext(float dt, int healsThisFrame, int damageThisFrame)
         {
-            var buffs = Buffs.GetNext(dt);
-            healsThisFrame += buffs.GetHealingThisTick(dt);
-            damageThisFrame += buffs.GetDamageThisTick(dt);
+            healsThisFrame += Buffs.GetHealingThisTick(dt);
+            damageThisFrame += Buffs.GetDamageThisTick(dt);
+            damageThisFrame = Buffs.CalculateAbsorbedDamage(damageThisFrame);
+
             var newDamageTaken = this.damageTaken - healsThisFrame + damageThisFrame;
             newDamageTaken = Math.Clamp(newDamageTaken, 0, BaseStats.MaxHealth);
 
-            return new PartyMemberStatus(BaseStats, buffs, newDamageTaken);
+            return new PartyMemberStatus(BaseStats, Buffs.GetUpdated(dt), newDamageTaken);
+        }
+
+        public Buffs GetBuffs()
+        {
+            var result = new Buffs();
+
+            foreach (var buff in Buffs.AllBuffs())
+            {
+                result.AddBuff(buff);
+            }
+
+            return result;
         }
     }
 }

@@ -1,25 +1,63 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Machina.Engine;
 
 namespace LD50.Data
 {
     public class Buffs
     {
-        private readonly List<Buff> list = new List<Buff>();
+        private readonly List<IBuff> list = new List<IBuff>();
+        public object Count => this.list.Count;
 
-        public void AddBuff(Buff buff)
+        public void AddBuff(IBuff buff)
         {
             this.list.Add(buff);
         }
+
+        public int CalculateAbsorbedDamage(int incomingDamage)
+        {
+            if (incomingDamage == 0)
+            {
+                return 0;
+            }
+            
+            for(int i = 0; i < this.list.Count; i++)
+            {
+                var buff = this.list[i];
+                if (buff is ShieldBuff shield)
+                {
+                    var damageWithAbsorbedRemove = shield.GetDamageAfterAbsorb(incomingDamage);
+                    var damageMitigated = incomingDamage - damageWithAbsorbedRemove;
+                    this.list[i] = shield.GetBuffAfterAbsorb(damageMitigated);
+                    
+                    incomingDamage = damageWithAbsorbedRemove;
+                }
+            }
+            
+            return incomingDamage;
+        }
         
-        public Buffs GetNext(float dt)
+        public Buffs GetUpdated(float dt)
         {
             var result = new Buffs();
 
-            foreach (var buff in list)
+            foreach (var buff in this.list)
             {
                 var newBuff = buff.GetNext(dt);
-                if (newBuff.RemainingDuration > 0)
+
+                var shouldCarryOver = newBuff.RemainingDuration > 0;
+
+                if (newBuff is EmptyBuff)
+                {
+                    shouldCarryOver = false;
+                }
+
+                if (newBuff is ShieldBuff {DamageAbsorb: 0})
+                {
+                    shouldCarryOver = false;
+                }
+                
+                if (shouldCarryOver)
                 {
                     result.AddBuff(newBuff);
                 }
@@ -31,7 +69,7 @@ namespace LD50.Data
         public int GetHealingThisTick(float dt)
         {
             var totalHealing = 0;
-            foreach (var buff in list)
+            foreach (var buff in this.list)
             {
                 totalHealing += buff.GetHealAmount(dt);
             }
@@ -42,6 +80,16 @@ namespace LD50.Data
         public int GetDamageThisTick(float dt)
         {
             return 0;
+        }
+
+        public IBuff[] AllBuffs()
+        {
+            return this.list.ToArray();
+        }
+
+        public IBuff At(int index)
+        {
+            return this.list[index];
         }
     }
 }
