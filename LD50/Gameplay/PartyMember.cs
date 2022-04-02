@@ -31,5 +31,10 @@ namespace LD50.Gameplay
         {
             this.pendingHeals += heal;
         }
+
+        public void GainBuff(Buff spellBuffAppliedWhenComplete)
+        {
+            
+        }
     }
 }

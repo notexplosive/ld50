@@ -1,11 +1,13 @@
-﻿namespace LD50.Data
+﻿using System;
+
+namespace LD50.Data
 {
     public readonly struct PartyMemberStatus
     {
         private readonly int damageTaken;
         private readonly Buffs appliedBuffs;
         public BaseStats BaseStats { get; }
-        public int Health => BaseStats.MaxHealth - this.damageTaken;    
+        public int Health => BaseStats.MaxHealth - this.damageTaken;
 
         public PartyMemberStatus(BaseStats baseStats, Buffs appliedBuffs, int damageTaken = 0)
         {
@@ -19,9 +21,10 @@
             var buffs = this.appliedBuffs.GetNext(dt);
             healsThisFrame += buffs.GetHealingThisTick(dt);
             damageThisFrame += buffs.GetDamageThisTick(dt);
-            var damageTaken = this.damageTaken - healsThisFrame + damageThisFrame;
-            
-            return new PartyMemberStatus(BaseStats, buffs, damageTaken);
+            var newDamageTaken = this.damageTaken - healsThisFrame + damageThisFrame;
+            newDamageTaken = Math.Clamp(newDamageTaken, 0, BaseStats.MaxHealth);
+
+            return new PartyMemberStatus(BaseStats, buffs, newDamageTaken);
         }
     }
 }

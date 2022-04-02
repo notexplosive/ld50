@@ -1,7 +1,9 @@
 ﻿using System.Collections.Generic;
+using LD50.Data;
 using Machina.Components;
 using Machina.Data;
 using Machina.Engine;
+using Machina.ThirdParty;
 using Microsoft.Xna.Framework.Input;
 
 namespace LD50.Gameplay
@@ -9,11 +11,21 @@ namespace LD50.Gameplay
     public class SpellCaster : BaseComponent
     {
         private readonly List<PartyMemberTuple> partyTuples;
+        private readonly TweenChain castingTween;
+        private readonly TweenAccessors<float> percentTweenable;
+        private readonly ISpell[] spells;
+        private readonly Party party;
 
-        public SpellCaster(Actor actor) : base(actor)
+        public SpellCaster(Actor actor, Party party, ISpell[] spells) : base(actor)
         {
+            this.spells = spells;
+            this.party = party;
             this.partyTuples = new List<PartyMemberTuple>();
+            this.castingTween = new TweenChain();
+            this.percentTweenable = new TweenAccessors<float>(0);
         }
+
+        public float Percent => this.percentTweenable.CurrentValue;
 
         public override void OnKey(Keys key, ButtonState state, ModifierKeys modifiers)
         {
@@ -55,14 +67,41 @@ namespace LD50.Gameplay
         {
             var hoveredPartyMember = GetHoveredPartyMember();
 
+            if (!this.castingTween.IsDone())
+            {
+                MachinaClient.Print("Casting in progress");
+                // todo: buffer next spell
+                return;
+            }
+            
+            // if spell is on cooldown, return
+            // todo: buffer next spell
+            
             if (hoveredPartyMember == null)
             {
                 MachinaClient.Print("No target");    
                 return;
             }
-            
-            MachinaClient.Print("Casting spell",i);
+
+            MachinaClient.Print("Casting spell", i);
+
+            InProgressSpell = new PendingSpell(hoveredPartyMember, this.spells[i]);
+
+            if (!InProgressSpell.Spell.IsInstant)
+            {
+                this.castingTween.Clear();
+                this.castingTween.AppendFloatTween(1f, InProgressSpell.Spell.CastDuration, EaseFuncs.Linear,
+                    this.percentTweenable);
+                this.castingTween.AppendCallback(
+                    () =>
+                    {
+                        this.percentTweenable.setter(0f);
+                        InProgressSpell.Spell.Execute(InProgressSpell.TargetPartyMember, this.party);
+                    });
+            }
         }
+
+        public PendingSpell InProgressSpell { get; private set; }
 
         public void AddPartyMemberInterface(Actor partyMemberActor, Hoverable hoverable, PartyMember partyMember)
         {
@@ -94,6 +133,11 @@ namespace LD50.Gameplay
                 this.hoverable = hoverable;
                 this.partyMember = partyMember;
             }
+        }
+
+        public void UpdateTween(float dt)
+        {
+            this.castingTween.Update(dt);
         }
     }
 }

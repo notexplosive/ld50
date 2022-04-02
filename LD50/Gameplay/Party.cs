@@ -1,4 +1,6 @@
-﻿namespace LD50.Gameplay
+﻿using System.Collections;
+
+namespace LD50.Gameplay
 {
     public class Party
     {
@@ -12,6 +14,11 @@
         public PartyMember GetMember(int partyMemberIndex)
         {
             return this.partyMembers[partyMemberIndex];
+        }
+
+        public PartyMember[] AllMembers()
+        {
+            return this.partyMembers;
         }
     }
 }
