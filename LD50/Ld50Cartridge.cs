@@ -13,7 +13,7 @@ namespace LD50
 {
     internal class Ld50Cartridge : GameCartridge
     {
-        public Ld50Cartridge() : base(new Point(900, 1600), ResizeBehavior.KeepAspectRatio)
+        public Ld50Cartridge() : base(new Point(900/2, 1600/2), ResizeBehavior.KeepAspectRatio)
         {
         }
 
@@ -23,12 +23,11 @@ namespace LD50
             var game = SceneLayers.AddNewScene();
             var textActor = game.AddActor("Text");
 
-            var windowSize = new Point(900, 1600);
+            var windowSize = new Point(900 / 2, 1600 / 2);
 
             var deviceLayout = LayoutNode.VerticalParent("device", LayoutSize.Pixels(windowSize),
-                new LayoutStyle(margin: new Point(10, 50)),
-                LayoutNode.Leaf("screen", LayoutSize.StretchedBoth()),
-                LayoutNode.Leaf("Buttons", LayoutSize.StretchedHorizontally(100))
+                LayoutStyle.Empty,
+                LayoutNode.Leaf("screen", LayoutSize.StretchedBoth())
                 );
 
             var screenRectangle = deviceLayout.Bake().GetNode("screen").Rectangle;
@@ -46,7 +45,7 @@ namespace LD50
 
             var postActor = sceneRenderer.PrimaryScene.AddActor("Posts");
 
-            new PostTimelineRenderer(postActor);
+            new PostTimelineRenderer(postActor, screenRectangle.Width);
         }
 
         public override void PrepareDynamicAssets(AssetLoader loader, MachinaRuntime runtime)
