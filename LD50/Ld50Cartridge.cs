@@ -1,4 +1,5 @@
-﻿using LD50.Renderer;
+﻿using LD50.Gameplay;
+using LD50.Renderer;
 using Machina.Components;
 using Machina.Data;
 using Machina.Data.Layout;
@@ -21,7 +22,6 @@ namespace LD50
         {
             SceneLayers.BackgroundColor = Color.Black;
             var game = SceneLayers.AddNewScene();
-            var textActor = game.AddActor("Text");
 
             var windowSize = new Point(900 / 2, 1600 / 2);
 
@@ -33,6 +33,7 @@ namespace LD50
             var screenRectangle = deviceLayout.Bake().GetNode("screen").Rectangle;
 
             var screenActor = game.AddActor("Screen", screenRectangle.Location.ToVector2());
+
             new BoundingRect(screenActor, screenRectangle.Size);
             new Hoverable(screenActor);
             new BoundedCanvas(screenActor);
@@ -43,9 +44,13 @@ namespace LD50
             new BoundingRect(background, screenRectangle.Size);
             new BoundingRectFill(background, new Color(21, 32, 43));
 
-            var postActor = sceneRenderer.PrimaryScene.AddActor("Posts");
+            var timelineActor = sceneRenderer.PrimaryScene.AddActor("Posts");
 
-            new PostTimelineRenderer(postActor, screenRectangle.Width);
+            var scrollButton = new ScrollButton(screenActor);
+            var posts = new PostTimelineRenderer(timelineActor, screenRectangle.Width);
+
+            scrollButton.ScrolledToNextPage += posts.AddNewPosts;
+            scrollButton.ScrolledToNextPage += posts.AnimateScroll;
         }
 
         public override void PrepareDynamicAssets(AssetLoader loader, MachinaRuntime runtime)
