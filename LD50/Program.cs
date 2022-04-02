@@ -12,7 +12,7 @@ namespace LD50
         private static void Main(string[] args)
         {
             MachinaBootstrap.Run(
-                new GameSpecification("LD50 Game - NotExplosive.net", args, new GameSettings(new Point(1600, 900))),
+                new GameSpecification("LD50 Game - NotExplosive.net", args, new GameSettings(new Point(900, 1600))),
                 new Ld50Cartridge(), ".");
         }
     }
