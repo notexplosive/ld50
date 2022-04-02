@@ -33,7 +33,7 @@ namespace LD50.Data
         {
             var result = new Buffs();
 
-            foreach (var buff in Buffs.AllBuffs())
+            foreach (var buff in Buffs.AllNonEmptyBuffs())
             {
                 result.AddBuff(buff);
             }

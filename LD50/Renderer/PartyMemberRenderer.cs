@@ -1,4 +1,5 @@
-﻿using LD50.Gameplay;
+﻿using LD50.Data;
+using LD50.Gameplay;
 using Machina.Components;
 using Machina.Data;
 using Machina.Data.Layout;
@@ -27,7 +28,9 @@ namespace LD50.Renderer
                     LayoutNode.Leaf("portrait", LayoutSize.FixedAspectRatio(1, 1))),
                 LayoutNode.VerticalParent("bars", LayoutSize.FixedAspectRatio(2, 1), LayoutStyle.Empty,
                     LayoutNode.Leaf("health", LayoutSize.StretchedBoth()),
-                    LayoutNode.Leaf("mana", LayoutSize.StretchedBoth()))
+                    LayoutNode.Leaf("mana", LayoutSize.StretchedBoth()),
+                    LayoutNode.Leaf("buffs", LayoutSize.StretchedBoth())
+                    )
             );
 
             this.layout = rawLayout.Bake();
@@ -39,6 +42,7 @@ namespace LD50.Renderer
             var portrait = this.layout.GetNode("portrait", this.boundingRect.Location);
             var health = this.layout.GetNode("health", this.boundingRect.Location);
             var mana = this.layout.GetNode("mana", this.boundingRect.Location);
+            var buffsRegion = this.layout.GetNode("buffs", this.boundingRect.Location);
 
             spriteBatch.DrawRectangle(root.Rectangle, Color.White, 1f, transform.Depth);
             spriteBatch.DrawRectangle(portrait.Rectangle, Color.White, 1f, transform.Depth);
@@ -49,6 +53,15 @@ namespace LD50.Renderer
             spriteBatch.DrawRectangle(health.Rectangle, Color.White, 1f, transform.Depth - 10);
 
             spriteBatch.DrawRectangle(mana.Rectangle, Color.Blue, 1f, transform.Depth - 5);
+
+            int buffIndex = 0;
+            var buffSize = new Point(buffsRegion.Rectangle.Height);
+            foreach (var buff in this.partyMember.Status.Buffs.AllNonEmptyBuffs())
+            {
+                var buffRectangle = new Rectangle(buffsRegion.PositionRelativeToRoot + new Point(buffSize.X * buffIndex,0), buffSize);
+                spriteBatch.DrawRectangle(buffRectangle, Color.Green, 2f, transform.Depth - 5);
+                buffIndex++;
+            }
         }
     }
 }

@@ -82,6 +82,7 @@ namespace LD50.Gameplay
             if (i >= this.spells.Length)
             {
                 MachinaClient.Print("no spell at that index", i);
+                return false;
             }
             
             var spell = this.spells[i];

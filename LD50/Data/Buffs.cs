@@ -82,9 +82,18 @@ namespace LD50.Data
             return 0;
         }
 
-        public IBuff[] AllBuffs()
+        public IBuff[] AllNonEmptyBuffs()
         {
-            return this.list.ToArray();
+            var result = new List<IBuff>();
+            foreach (var item in this.list)
+            {
+                if (!(item is EmptyBuff))
+                {
+                    result.Add(item);
+                }
+            }
+            
+            return result.ToArray();
         }
 
         public IBuff At(int index)
