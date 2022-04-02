@@ -32,5 +32,20 @@
         {
             return this.current <= 0;
         }
+
+        public float RemainingTime()
+        {
+            return this.current;
+        }
+
+        public float Percent()
+        {
+            if (IsReady())
+            {
+                return 0f;
+            }
+            
+            return this.current / this.total;
+        }
     }
 }

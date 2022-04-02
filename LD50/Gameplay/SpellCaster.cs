@@ -15,7 +15,7 @@ namespace LD50.Gameplay
         private readonly TweenAccessors<float> percentTweenable;
         private readonly ISpell[] spells;
         private readonly Party party;
-        private readonly Cooldown globalCooldown;
+        public Cooldown GlobalCooldown { get; }
 
         public SpellCaster(Actor actor, Party party, ISpell[] spells, Cooldown globalCooldown) : base(actor)
         {
@@ -24,7 +24,7 @@ namespace LD50.Gameplay
             this.partyTuples = new List<PartyMemberTuple>();
             this.castingTween = new TweenChain();
             this.percentTweenable = new TweenAccessors<float>(0);
-            this.globalCooldown = globalCooldown;
+            this.GlobalCooldown = globalCooldown;
         }
 
         public float Percent => this.percentTweenable.CurrentValue;
@@ -35,6 +35,8 @@ namespace LD50.Gameplay
             {
                 spell.Cooldown.Update(dt);
             }
+            
+            this.GlobalCooldown.Update(dt);
         }
 
         public override void OnKey(Keys key, ButtonState state, ModifierKeys modifiers)
@@ -91,7 +93,7 @@ namespace LD50.Gameplay
                 return false;
             }
 
-            if (!this.globalCooldown.IsReady())
+            if (!this.GlobalCooldown.IsReady())
             {
                 // todo: buffer next spell if there's less than half second remaining
                 MachinaClient.Print("global cooldown");
@@ -114,12 +116,13 @@ namespace LD50.Gameplay
             MachinaClient.Print("Casting spell", spell.Name);
 
             InProgressSpell = new PendingSpell(hoveredPartyMember, spell);
-
+            this.GlobalCooldown.Start(); // gcd triggers when you START casting a spell
+            
             void Cast()
             {
                 InProgressSpell.Spell.Execute(InProgressSpell.TargetPartyMember, this.party);
-                InProgressSpell.Spell.Cooldown.Start();
-                this.globalCooldown.Start();
+                InProgressSpell.Spell.Cooldown.Start(); // regular cooldown starts when you finish the spell
+                InProgressSpell = new PendingSpell();
             }
             
             if (!InProgressSpell.Spell.IsInstant)

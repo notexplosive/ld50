@@ -83,7 +83,7 @@ namespace LD50
 
             var gameActor = game.AddActor("Game");
 
-            var spellCaster = new SpellCaster(gameActor, party, spells, new Cooldown(0.25f));
+            var spellCaster = new SpellCaster(gameActor, party, spells, new Cooldown(1f));
             new BattleSystem(gameActor, party);
 
             var castingBarActor = layoutActors.GetActor("casting-bar");
@@ -102,7 +102,7 @@ namespace LD50
             foreach (var spell in spells)
             {
                 var spellRoot = layoutActors.GetActor(spell.Name);
-                SpellInterface.CreateFromActor(spellRoot, spellCaster);
+                SpellInterface.CreateFromActor(spellRoot, spellCaster, spell);
             }
         }
 
