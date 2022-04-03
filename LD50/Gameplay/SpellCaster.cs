@@ -39,6 +39,14 @@ namespace LD50.Gameplay
             }
             
             GlobalCooldown.Update(dt);
+
+            if (BufferedSpell.Spell != null)
+            {
+                if (TryToCastSpell(BufferedSpell, true))
+                {
+                    ClearBufferedSpell();
+                }
+            }
         }
 
         public override void OnKey(Keys key, ButtonState state, ModifierKeys modifiers)
@@ -48,6 +56,7 @@ namespace LD50.Gameplay
                 if (key == Keys.Escape)
                 {
                     CancelInProgressSpell();
+                    ClearBufferedSpell();
                 }
                 
                 if (key == Keys.D1)
@@ -82,42 +91,58 @@ namespace LD50.Gameplay
             }
         }
 
-        public bool TryToCastSpell(int i)
+        public static readonly float BufferWindow = 0.5f;
+        
+        public bool TryToCastSpell(PendingSpell pendingSpell, bool isFromBuffer = false)
         {
-            var hoveredPartyMember = GetHoveredPartyMember();
+            if (!isFromBuffer)
+            {
+                ClearBufferedSpell();
+            }
 
             if (this.player.Status.IsDead)
             {
+                ClearBufferedSpell();
                 MachinaClient.Print("You are dead");
                 return false;
             }
             
-            if (i >= this.spells.Length)
-            {
-                MachinaClient.Print("no spell at that index", i);
-                return false;
-            }
-            
-            var spell = this.spells[i];
-
             if (!this.castingTween.IsDone())
             {
                 MachinaClient.Print("Casting in progress");
-                // todo: buffer next spell if there's less than a half second cast time remaining
+                var timeLeft = InProgressSpell.Spell.CastDuration - this.percentTweenable.CurrentValue * InProgressSpell.Spell.CastDuration;
+
+                if (timeLeft < SpellCaster.BufferWindow)
+                {
+                    BufferSpell(pendingSpell);
+                }
+
                 return false;
             }
 
             if (!GlobalCooldown.IsReady())
             {
-                // todo: buffer next spell if there's less than half second remaining
+                if (GlobalCooldown.RemainingTime() < SpellCaster.BufferWindow)
+                {
+                    BufferSpell(pendingSpell);
+                }
+
                 MachinaClient.Print("global cooldown");
                 return false;
             }
+
+            var spell = pendingSpell.Spell;
+            var hoveredPartyMember = pendingSpell.TargetPartyMember;
             
             if (!spell.Cooldown.IsReady())
             {
                 MachinaClient.Print("that spell is on cooldown");
-                // todo: buffer next spell if there's less than a half second remaining
+
+                if (spell.Cooldown.RemainingTime() < SpellCaster.BufferWindow)
+                {
+                    BufferSpell(pendingSpell);
+                }
+
                 return false;
             }
 
@@ -129,13 +154,16 @@ namespace LD50.Gameplay
 
             if (spell.ManaCost > this.player.Status.Mana)
             {
+                if (isFromBuffer)
+                {
+                    ClearBufferedSpell();
+                }
+                
                 MachinaClient.Print("Not enough mana");    
                 return false;
             }
 
-            MachinaClient.Print("Casting spell", spell.Name);
-
-            InProgressSpell = new PendingSpell(hoveredPartyMember, spell);
+            InProgressSpell = pendingSpell;
             GlobalCooldown.Start(); // gcd triggers when you START casting a spell
             
             void FinishCast()
@@ -149,6 +177,7 @@ namespace LD50.Gameplay
             if (!InProgressSpell.Spell.IsInstant)
             {
                 this.castingTween.Clear();
+                this.percentTweenable.setter(0);
                 this.castingTween.AppendFloatTween(1f, InProgressSpell.Spell.CastDuration, EaseFuncs.Linear,
                     this.percentTweenable);
                 this.castingTween.AppendCallback(FinishCast);
@@ -160,6 +189,31 @@ namespace LD50.Gameplay
 
             return true;
         }
+        
+        public bool TryToCastSpell(int i)
+        {
+            ClearBufferedSpell();
+            var hoveredPartyMember = GetHoveredPartyMember();
+
+            if (i >= this.spells.Length)
+            {
+                MachinaClient.Print("no spell at that index", i);
+                return false;
+            }
+            
+            var spell = this.spells[i];
+            var pendingSpell = new PendingSpell(hoveredPartyMember, spell);
+
+            return TryToCastSpell(pendingSpell);
+        }
+
+        private void BufferSpell(PendingSpell pendingSpell)
+        {
+            MachinaClient.Print("buffered");
+            BufferedSpell = pendingSpell;
+        }
+
+        public PendingSpell BufferedSpell { get; private set; }
 
         public PendingSpell InProgressSpell { get; private set; }
 
@@ -177,12 +231,23 @@ namespace LD50.Gameplay
                 CancelInProgressSpell();
             }
 
+            if (BufferedSpell.TargetPartyMember == member)
+            {
+                ClearBufferedSpell();
+            }
+
             if (member == this.player)
             {
                 CancelInProgressSpell();
+                ClearBufferedSpell();
             }
         }
 
+        private void ClearBufferedSpell()
+        {
+            BufferedSpell = new PendingSpell();
+        }
+        
         private void CancelInProgressSpell()
         {
             this.percentTweenable.setter(0f);

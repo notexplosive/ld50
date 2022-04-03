@@ -31,6 +31,11 @@ namespace LD50.Renderer
             {
                 spriteBatch.DrawRectangle(this.boundingRectangle.Rect, Color.Yellow, 10f, transform.Depth - 10);
             }
+            
+            if (this.spellCaster.BufferedSpell.Spell == this.spell)
+            {
+                spriteBatch.DrawRectangle(this.boundingRectangle.Rect, Color.LightGreen, 5f, transform.Depth - 15);
+            }
 
             Cooldown renderedCooldown;
 

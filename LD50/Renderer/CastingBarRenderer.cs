@@ -31,7 +31,18 @@ namespace LD50.Renderer
             var fillRect = new Rectangle(this.boundingRect.Rect.Location,
                 new Point((int) (this.boundingRect.Rect.Size.X * this.spellCaster.Percent),
                     this.boundingRect.Rect.Size.Y));
+            
             spriteBatch.FillRectangle(fillRect, Color.White, transform.Depth - 5);
+
+            if (this.spellCaster.InProgressSpell.Spell != null)
+            {
+                var durationUpToWindow = this.spellCaster.InProgressSpell.Spell.CastDuration - SpellCaster.BufferWindow;
+                var percent = durationUpToWindow / this.spellCaster.InProgressSpell.Spell.CastDuration;
+                
+                var alongMark = fillRect.Location.ToVector2() + new Vector2(this.boundingRect.Width * percent, 0);
+                spriteBatch.DrawLine(alongMark, alongMark + new Vector2(0, fillRect.Height), Color.White, 1f,
+                    transform.Depth - 10);
+            }
         }
     }
 }
