@@ -15,6 +15,7 @@ namespace LD50.Renderer
         private readonly BoundingRect boundingRect;
         private readonly Chat chat;
         private readonly List<PositionedText> currentTexts = new List<PositionedText>();
+        private readonly NinepatchSheet ninepatch;
 
         public ChatRenderer(Actor actor, Chat chat) : base(actor)
         {
@@ -22,6 +23,8 @@ namespace LD50.Renderer
             this.chat = chat;
 
             this.chat.ContentChanged += WhenContentChanged;
+
+            this.ninepatch = MachinaClient.Assets.GetMachinaAsset<NinepatchSheet>("chat-patch");
         }
 
         private void WhenContentChanged()
@@ -59,6 +62,8 @@ namespace LD50.Renderer
 
         public override void Draw(SpriteBatch spriteBatch)
         {
+            this.ninepatch.DrawFullNinepatch(spriteBatch, this.boundingRect.Rect, NinepatchSheet.GenerationDirection.Outer, transform.Depth + 100);
+            
             foreach (var positionedText in this.currentTexts)
             {
                 foreach (var item in positionedText.Text.GetRenderedText())

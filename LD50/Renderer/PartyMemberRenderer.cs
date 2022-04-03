@@ -17,6 +17,7 @@ namespace LD50.Renderer
         private readonly PartyMember partyMember;
         private readonly SpellCaster spellCaster;
         private readonly Hoverable hoverable;
+        private readonly NinepatchSheet ninepatch;
 
         public PartyMemberRenderer(Actor actor, PartyMember partyMember, SpellCaster spellCaster) : base(actor)
         {
@@ -24,6 +25,7 @@ namespace LD50.Renderer
             this.hoverable = RequireComponent<Hoverable>();
             this.spellCaster = spellCaster;
             this.partyMember = partyMember;
+            this.ninepatch = MachinaClient.Assets.GetMachinaAsset<NinepatchSheet>("ui-patch");
 
             var rawLayout = LayoutNode.HorizontalParent("root", LayoutSize.Pixels(this.boundingRect.Size),
                 new LayoutStyle(),
@@ -46,19 +48,20 @@ namespace LD50.Renderer
         public override void Draw(SpriteBatch spriteBatch)
         {
             var root = this.layout.GetNode("root", this.boundingRect.Location);
-            var portrait = this.layout.GetNode("portrait", this.boundingRect.Location);
+            var portraitRegion = this.layout.GetNode("portrait", this.boundingRect.Location);
             var health = this.layout.GetNode("health", this.boundingRect.Location);
             var mana = this.layout.GetNode("mana", this.boundingRect.Location);
             var buffsRegion = this.layout.GetNode("buffs", this.boundingRect.Location);
             var nameRegion = this.layout.GetNode("name", this.boundingRect.Location);
             var roleRegion = this.layout.GetNode("role", this.boundingRect.Location);
+            
+            this.ninepatch.DrawFullNinepatch(spriteBatch, root.Rectangle, NinepatchSheet.GenerationDirection.Outer, transform.Depth + 100);
 
-            var outlineColor = Color.White;
-
-            if (this.partyMember.Status.IsDead)
-            {
-                outlineColor = Color.DarkRed;
-            }
+            var rolesImage = MachinaClient.Assets.GetMachinaAsset<SpriteSheet>("roles");
+            rolesImage.DrawFrame(spriteBatch, (int) this.partyMember.Role, roleRegion.Rectangle.Center.ToVector2(), 1f, 0f, XYBool.False, transform.Depth - 10, Color.White, true);
+            
+            var portraitImage = MachinaClient.Assets.GetMachinaAsset<SpriteSheet>("portraits");
+            portraitImage.DrawFrame(spriteBatch, (int)this.partyMember.Portrait, portraitRegion.Rectangle.Center.ToVector2(), 1f, 0f, XYBool.False, transform.Depth - 10, Color.White, true);
 
             if (this.spellCaster.InProgressSpell.TargetPartyMember == this.partyMember)
             {
@@ -81,19 +84,16 @@ namespace LD50.Renderer
                 item.Draw(spriteBatch, nameRegion.PositionRelativeToRoot, 0f, transform.Depth);
             }
 
-            spriteBatch.DrawRectangle(root.Rectangle, outlineColor, 1f, transform.Depth);
-            spriteBatch.DrawRectangle(portrait.Rectangle, outlineColor, 1f, transform.Depth);
-
             var healthFill = new Rectangle(health.Rectangle.Location,
                 new Point((int) (health.Rectangle.Width * this.partyMember.HealthPercent), health.Rectangle.Height));
             spriteBatch.FillRectangle(healthFill, Color.Red, transform.Depth - 5);
-            spriteBatch.DrawRectangle(health.Rectangle, outlineColor, 1f, transform.Depth - 10);
+            spriteBatch.DrawRectangle(health.Rectangle, Color.Black, 1f, transform.Depth - 10);
 
             // duplicate code alert!! should have a DrawFilledBar helper method
             var manaFill = new Rectangle(mana.Rectangle.Location,
                 new Point((int) (mana.Rectangle.Width * this.partyMember.ManaPercent), mana.Rectangle.Height));
             spriteBatch.FillRectangle(manaFill, Color.Blue, transform.Depth - 5);
-            spriteBatch.DrawRectangle(mana.Rectangle, outlineColor, 1f, transform.Depth - 10);
+            spriteBatch.DrawRectangle(mana.Rectangle, Color.Black, 1f, transform.Depth - 10);
 
             var buffIndex = 0;
             var buffSize = new Point(buffsRegion.Rectangle.Height);

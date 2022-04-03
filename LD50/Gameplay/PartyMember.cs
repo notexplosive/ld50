@@ -5,22 +5,33 @@ using Machina.Engine;
 
 namespace LD50.Gameplay
 {
+    public enum PartyPortrait
+    {
+        Tank,
+        Mage,
+        Rogue,
+        Druid,
+        Healer
+    }
+    
     public delegate void PartyMemberEvent(PartyMember member);
     
     public class PartyMember
     {
         public PartyMemberStatus Status { get; private set; }
         public PartyRole Role { get; }
+        public PartyPortrait Portrait { get; }
         private int pendingDamage;
         private int pendingHeals;
         private int pendingSpentMana;
 
         public event PartyMemberEvent Died;
 
-        public PartyMember(BaseStats baseStats, string name = "P.T. Member", PartyRole role = default)
+        public PartyMember(BaseStats baseStats, string name = "P.T. Member", PartyRole role = default, PartyPortrait portrait = PartyPortrait.Tank)
         {
             Status = new PartyMemberStatus(baseStats, new Buffs(), 0, baseStats.MaxMana);
             Role = role;
+            Portrait = portrait;
             Name = name;
         }
 

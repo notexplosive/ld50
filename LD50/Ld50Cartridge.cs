@@ -3,6 +3,7 @@ using System.Linq;
 using LD50.Data;
 using LD50.Gameplay;
 using LD50.Renderer;
+using Machina.Components;
 using Machina.Data;
 using Machina.Data.Layout;
 using Machina.Data.TextRendering;
@@ -85,9 +86,9 @@ namespace LD50
                 LayoutNode.VerticalParent("right-half", LayoutSize.StretchedBoth(),
                     new LayoutStyle(new Point(15), 15, Alignment.Center),
                     LayoutNode.Leaf("chat", LayoutSize.StretchedBoth()),
-                    LayoutNode.VerticalParent("spells-zone", LayoutSize.StretchedHorizontally(250),
+                    LayoutNode.VerticalParent("spells-zone", LayoutSize.StretchedHorizontally(240),
                         new LayoutStyle(Point.Zero, 15, Alignment.BottomCenter),
-                        LayoutNode.Leaf("casting-bar", LayoutSize.StretchedHorizontally(25)),
+                        LayoutNode.Leaf("casting-bar", LayoutSize.StretchedBoth()),
                         LayoutNode.HorizontalParent("spell-list", LayoutSize.StretchedHorizontally(150),
                             new LayoutStyle(alignment: Alignment.BottomCenter),
                             SpellNodes())
@@ -97,13 +98,13 @@ namespace LD50
 
             var layoutActors = new LayoutActors(game, layout.Bake());
 
-            var player = new PartyMember(new BaseStats(100, 500, 5), "Player", PartyRole.Healer);
+            var player = new PartyMember(new BaseStats(100, 500, 5), "Player", PartyRole.Healer, PartyPortrait.Healer);
 
             this.party = new Party(
                 new PartyMember(new BaseStats(100, 100, 0, 5), "Terry", PartyRole.Tank),
-                new PartyMember(new BaseStats(100, 100, 0, 10), "Miriam"),
-                new PartyMember(new BaseStats(100, 100, 0, 10), "Rodney"),
-                new PartyMember(new BaseStats(100, 100, 0, 10), "Helen"),
+                new PartyMember(new BaseStats(100, 100, 0, 10), "Miriam", PartyRole.Damage, PartyPortrait.Mage),
+                new PartyMember(new BaseStats(100, 100, 0, 10), "Rodney", PartyRole.Damage,  PartyPortrait.Rogue),
+                new PartyMember(new BaseStats(100, 100, 0, 10), "Helen", PartyRole.Damage, PartyPortrait.Druid),
                 player
             );
 
@@ -111,8 +112,8 @@ namespace LD50
             var gameActor = game.AddActor("Game");
 
             var spellCaster = new SpellCaster(gameActor, this.party, spells, player, new Cooldown(1f));
-            var battleSystem = new BattleSystem(gameActor, this.party, new BattleLogger(chat));
-            
+            var battleSystem = new BattleSystem(gameActor, this.party, new BattleLogger(this.chat));
+
             battleSystem.EncounterEnded += this.party.ReviveAnyDeadPartyMembers;
 
             new BattleRenderer(layoutActors.GetActor("screen"), battleSystem);
@@ -122,6 +123,11 @@ namespace LD50
 
             var chatActor = layoutActors.GetActor("chat");
             new ChatRenderer(chatActor, this.chat);
+
+            var spellZone = layoutActors.GetActor("spells-zone");
+            spellZone.transform.Depth -= 10;
+            new NinepatchRenderer(spellZone, MachinaClient.Assets.GetMachinaAsset<NinepatchSheet>("ui-patch"),
+                NinepatchSheet.GenerationDirection.Outer);
 
             var partyMemberIndex = 0;
             foreach (var name in partyMemberLayoutNames)
@@ -156,6 +162,22 @@ namespace LD50
 
         public override void PrepareDynamicAssets(AssetLoader loader, MachinaRuntime runtime)
         {
+            loader.AddMachinaAssetCallback("ui-patch", () =>
+            {
+                var uiPatchImage = MachinaClient.Assets.GetTexture("ui-patch-sheet");
+                return new NinepatchSheet(uiPatchImage, uiPatchImage.Bounds, new Rectangle(6, 6, 24, 24),
+                    runtime.Painter);
+            });
+            
+            loader.AddMachinaAssetCallback("chat-patch", () =>
+            {
+                var uiPatchImage = MachinaClient.Assets.GetTexture("chat-patch-sheet");
+                return new NinepatchSheet(uiPatchImage, uiPatchImage.Bounds, new Rectangle(6, 6, 24, 24),
+                    runtime.Painter);
+            });
+
+            loader.AddMachinaAssetCallback("roles", () => new GridBasedSpriteSheet("roles", new Point(76)));
+            loader.AddMachinaAssetCallback("portraits", () => new GridBasedSpriteSheet("party", new Point(152)));
         }
     }
 }
