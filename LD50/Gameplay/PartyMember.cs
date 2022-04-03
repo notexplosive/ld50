@@ -1,4 +1,7 @@
-﻿using LD50.Data;
+﻿using System.Collections.Generic;
+using LD50.Data;
+using Machina.Data;
+using Machina.Engine;
 
 namespace LD50.Gameplay
 {
@@ -62,6 +65,16 @@ namespace LD50.Gameplay
         public void ConsumeMana(int manaCost)
         {
             this.pendingSpentMana += manaCost;
+        }
+
+        public IEnumerator<ICoroutineAction> AttackCoroutine(Encounter encounter)
+        {
+            while (!encounter.IsFightOver() && !Status.IsDead)
+            {
+                var monster = encounter.GetRandomLivingMonster();
+                monster.TakeDamage(Status.BaseStats.DamageOutput);
+                yield return new WaitSeconds(1f); // todo: maybe each party member should have a different attack speed
+            }
         }
     }
 }

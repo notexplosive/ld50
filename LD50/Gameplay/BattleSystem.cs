@@ -7,20 +7,32 @@ namespace LD50.Gameplay
 {
     public class BattleSystem : BaseComponent
     {
+        public Encounter CurrentEncounter { get; private set; }
         private readonly Party party;
 
         public BattleSystem(Actor actor, Party party) : base(actor)
         {
             this.party = party;
-            actor.scene.StartCoroutine(BasicBattle());
+            CurrentEncounter = new Encounter();
         }
 
-        private IEnumerator<ICoroutineAction> BasicBattle()
+        public void StartNewEncounter(Encounter encounter)
+        {
+            CurrentEncounter = encounter;
+            
+            CurrentEncounter.StartCoroutines(actor.scene, party);
+        }
+
+        public IEnumerator<ICoroutineAction> CombatLoopCoroutine()
         {
             while (true)
             {
-                yield return new WaitSeconds(1);
-                this.party.GetMostThreateningPartyMember().TakeDamage(5);
+                var encounter = new Encounter(
+                    new Monster(100, 10, 2f),
+                    new Monster(100, 10, 2f));
+                StartNewEncounter(encounter);
+                yield return new WaitUntil(CurrentEncounter.IsFightOver);
+                yield return new WaitSeconds(5);
             }
         }
     }

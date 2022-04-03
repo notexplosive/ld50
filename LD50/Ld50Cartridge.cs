@@ -74,20 +74,22 @@ namespace LD50
 
             var layoutActors = new LayoutActors(game, layout.Bake());
 
-            var player = new PartyMember(new BaseStats(100, 100, 5), PartyRole.Healer);
+            var player = new PartyMember(new BaseStats(100, 500, 5), PartyRole.Healer);
 
             var party = new Party(
-                new PartyMember(new BaseStats(100, 100), PartyRole.Tank),
-                new PartyMember(new BaseStats(100, 100), PartyRole.Damage),
-                new PartyMember(new BaseStats(100, 100), PartyRole.Damage),
-                new PartyMember(new BaseStats(100, 100), PartyRole.Damage),
+                new PartyMember(new BaseStats(100, 100, 0, 5), PartyRole.Tank),
+                new PartyMember(new BaseStats(100, 100, 0, 10), PartyRole.Damage),
+                new PartyMember(new BaseStats(100, 100, 0, 10), PartyRole.Damage),
+                new PartyMember(new BaseStats(100, 100, 0, 10), PartyRole.Damage),
                 player
             );
 
             var gameActor = game.AddActor("Game");
 
             var spellCaster = new SpellCaster(gameActor, party, spells, player, new Cooldown(1f));
-            new BattleSystem(gameActor, party);
+            var battleSystem = new BattleSystem(gameActor, party);
+
+            new BattleRenderer(layoutActors.GetActor("screen"), battleSystem);
 
             var castingBarActor = layoutActors.GetActor("casting-bar");
             new CastingBarRenderer(castingBarActor, spellCaster);
@@ -96,7 +98,6 @@ namespace LD50
             foreach (var name in partyMemberLayoutNames)
             {
                 var partyMember = party.GetMember(partyMemberIndex);
-                partyMember.TakeDamage(10);
                 var partyMemberRoot = layoutActors.GetActor(name);
                 PartyMemberInterface.CreateFromActor(partyMemberRoot, partyMember, spellCaster);
                 partyMemberIndex++;
@@ -107,6 +108,8 @@ namespace LD50
                 var spellRoot = layoutActors.GetActor(spell.Name);
                 SpellInterface.CreateFromActor(spellRoot, spellCaster, spell);
             }
+
+            game.StartCoroutine(battleSystem.CombatLoopCoroutine());
         }
 
         public override void PrepareDynamicAssets(AssetLoader loader, MachinaRuntime runtime)
