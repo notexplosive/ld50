@@ -2,11 +2,15 @@
 
 namespace LD50.Gameplay
 {
+    public delegate void PartyMemberEvent(PartyMember member);
+    
     public class PartyMember
     {
         public PartyMemberStatus Status { get; private set; }
         private int pendingDamage;
         private int pendingHeals;
+
+        public event PartyMemberEvent Died;
 
         public PartyMember(BaseStats baseStats)
         {
@@ -17,7 +21,14 @@ namespace LD50.Gameplay
 
         public void Update(float dt)
         {
-            Status = Status.GetNext(dt, this.pendingHeals, this.pendingDamage);
+            var nextStatus = Status.GetNext(dt, this.pendingHeals, this.pendingDamage);
+
+            if (!Status.IsDead && nextStatus.IsDead)
+            {
+                Died?.Invoke(this);
+            }
+            
+            Status = nextStatus;
             this.pendingDamage = 0;
             this.pendingHeals = 0;
         }

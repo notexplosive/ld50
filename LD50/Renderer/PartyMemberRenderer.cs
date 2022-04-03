@@ -15,10 +15,12 @@ namespace LD50.Renderer
         private readonly BoundingRect boundingRect;
         private readonly BakedLayout layout;
         private readonly PartyMember partyMember;
+        private readonly SpellCaster spellCaster;
 
-        public PartyMemberRenderer(Actor actor, PartyMember partyMember) : base(actor)
+        public PartyMemberRenderer(Actor actor, PartyMember partyMember, SpellCaster spellCaster) : base(actor)
         {
             this.boundingRect = RequireComponent<BoundingRect>();
+            this.spellCaster = spellCaster;
             this.partyMember = partyMember;
 
             var rawLayout = LayoutNode.HorizontalParent("root", LayoutSize.Pixels(this.boundingRect.Size),
@@ -49,6 +51,11 @@ namespace LD50.Renderer
             if (this.partyMember.Status.IsDead)
             {
                 outlineColor = Color.DarkRed;
+            }
+
+            if (this.spellCaster.InProgressSpell.TargetPartyMember == this.partyMember)
+            {
+                spriteBatch.DrawRectangle(root.Rectangle, Color.Yellow, 5f, transform.Depth - 20);                
             }
             
             spriteBatch.DrawRectangle(root.Rectangle, outlineColor, 1f, transform.Depth);

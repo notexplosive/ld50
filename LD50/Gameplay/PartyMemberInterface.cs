@@ -9,7 +9,7 @@ namespace LD50.Gameplay
         public static void CreateFromActor(Actor actor, PartyMember partyMember, SpellCaster spellCaster)
         {
             var hoverable = new Hoverable(actor);
-            new PartyMemberRenderer(actor, partyMember);
+            new PartyMemberRenderer(actor, partyMember, spellCaster);
             new PartyMemberUpdater(actor, partyMember);
 
             spellCaster.AddPartyMemberInterface(actor, hoverable, partyMember);

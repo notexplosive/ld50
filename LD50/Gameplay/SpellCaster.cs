@@ -119,11 +119,11 @@ namespace LD50.Gameplay
             InProgressSpell = new PendingSpell(hoveredPartyMember, spell);
             GlobalCooldown.Start(); // gcd triggers when you START casting a spell
             
-            void Cast()
+            void FinishCast()
             {
                 InProgressSpell.Spell.Execute(InProgressSpell.TargetPartyMember, this.party);
                 InProgressSpell.Spell.Cooldown.Start(); // regular cooldown starts when you finish the spell
-                InProgressSpell = new PendingSpell();
+                CancelInProgressSpell();
             }
             
             if (!InProgressSpell.Spell.IsInstant)
@@ -131,16 +131,11 @@ namespace LD50.Gameplay
                 this.castingTween.Clear();
                 this.castingTween.AppendFloatTween(1f, InProgressSpell.Spell.CastDuration, EaseFuncs.Linear,
                     this.percentTweenable);
-                this.castingTween.AppendCallback(
-                    () =>
-                    {
-                        this.percentTweenable.setter(0f);
-                        Cast();
-                    });
+                this.castingTween.AppendCallback(FinishCast);
             }
             else
             {
-                Cast();
+                FinishCast();
             }
 
             return true;
@@ -151,6 +146,23 @@ namespace LD50.Gameplay
         public void AddPartyMemberInterface(Actor partyMemberActor, Hoverable hoverable, PartyMember partyMember)
         {
             this.partyTuples.Add(new PartyMemberTuple(partyMemberActor, hoverable, partyMember));
+
+            partyMember.Died += WhenPartyMemberDies;
+        }
+
+        private void WhenPartyMemberDies(PartyMember member)
+        {
+            if (InProgressSpell.TargetPartyMember == member)
+            {
+                CancelInProgressSpell();
+            }
+        }
+
+        private void CancelInProgressSpell()
+        {
+            this.percentTweenable.setter(0f);
+            this.castingTween.Clear();
+            InProgressSpell = new PendingSpell();
         }
 
         public PartyMember GetHoveredPartyMember()
