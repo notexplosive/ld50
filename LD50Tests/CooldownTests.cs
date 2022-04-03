@@ -16,10 +16,10 @@ namespace LD50Tests
                 new WholePartySpell("Test Spell", 0f, 0, 10, EmptyBuff.Create(), 10f)
             };
             var party = new Party();
-            
+
             var actor = new Actor("Test Actor", null);
-            var spellCaster = new SpellCaster(actor, party, spells, new Cooldown(0));
-            
+            var spellCaster = new SpellCaster(actor, party, spells, new PartyMember(new BaseStats()), new Cooldown(0));
+
             spellCaster.TryToCastSpell(0).Should().BeTrue();
             spellCaster.TryToCastSpell(0).Should().BeFalse();
             spellCaster.Update(20);
@@ -35,10 +35,10 @@ namespace LD50Tests
                 new WholePartySpell("Test Spell", 0f, 0, 10, EmptyBuff.Create(), 10f)
             };
             var party = new Party();
-            
+
             var actor = new Actor("Test Actor", null);
-            var spellCaster = new SpellCaster(actor, party, spells, new Cooldown(0));
-            
+            var spellCaster = new SpellCaster(actor, party, spells, new PartyMember(new BaseStats()), new Cooldown(0));
+
             spellCaster.TryToCastSpell(0).Should().BeTrue();
             spellCaster.TryToCastSpell(1).Should().BeTrue();
         }
@@ -52,14 +52,14 @@ namespace LD50Tests
                 new WholePartySpell("Test Spell", 0f, 0, 10, EmptyBuff.Create(), 0f)
             };
             var party = new Party();
-            
+
             var actor = new Actor("Test Actor", null);
-            var spellCaster = new SpellCaster(actor, party, spells, new Cooldown(0.5f));
-            
+            var spellCaster = new SpellCaster(actor, party, spells, new PartyMember(new BaseStats()), new Cooldown(0.5f));
+
             spellCaster.TryToCastSpell(0).Should().BeTrue();
             spellCaster.TryToCastSpell(1).Should().BeFalse();
         }
-        
+
         [Fact]
         public void global_cooldown_fades_away()
         {
@@ -69,10 +69,10 @@ namespace LD50Tests
                 new WholePartySpell("Test Spell", 0f, 0, 10, EmptyBuff.Create(), 0f)
             };
             var party = new Party();
-            
+
             var actor = new Actor("Test Actor", null);
-            var spellCaster = new SpellCaster(actor, party, spells, new Cooldown(0.5f));
-            
+            var spellCaster = new SpellCaster(actor, party, spells, new PartyMember(new BaseStats()), new Cooldown(0.5f));
+
             spellCaster.TryToCastSpell(0).Should().BeTrue();
             spellCaster.Update(1f);
             spellCaster.TryToCastSpell(1).Should().BeTrue();

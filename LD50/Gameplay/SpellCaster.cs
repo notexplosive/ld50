@@ -15,10 +15,12 @@ namespace LD50.Gameplay
         private readonly TweenAccessors<float> percentTweenable;
         private readonly ISpell[] spells;
         private readonly Party party;
+        private readonly PartyMember player;
         public Cooldown GlobalCooldown { get; }
 
-        public SpellCaster(Actor actor, Party party, ISpell[] spells, Cooldown globalCooldown) : base(actor)
+        public SpellCaster(Actor actor, Party party, ISpell[] spells, PartyMember player, Cooldown globalCooldown) : base(actor)
         {
+            this.player = player;
             this.spells = spells;
             this.party = party;
             this.partyTuples = new List<PartyMemberTuple>();
@@ -119,6 +121,12 @@ namespace LD50.Gameplay
                 return false;
             }
 
+            if (spell.ManaCost > this.player.Status.Mana)
+            {
+                MachinaClient.Print("Not enough mana");    
+                return false;
+            }
+
             MachinaClient.Print("Casting spell", spell.Name);
 
             InProgressSpell = new PendingSpell(hoveredPartyMember, spell);
@@ -128,6 +136,7 @@ namespace LD50.Gameplay
             {
                 InProgressSpell.Spell.Execute(InProgressSpell.TargetPartyMember, this.party);
                 InProgressSpell.Spell.Cooldown.Start(); // regular cooldown starts when you finish the spell
+                this.player.ConsumeMana(InProgressSpell.Spell.ManaCost);
                 CancelInProgressSpell();
             }
             

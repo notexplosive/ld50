@@ -74,16 +74,19 @@ namespace LD50
 
             var layoutActors = new LayoutActors(game, layout.Bake());
 
+            var player = new PartyMember(new BaseStats(100, 100, 5));
+            
             var party = new Party(
                 new PartyMember(new BaseStats(100, 100)),
                 new PartyMember(new BaseStats(100, 100)),
                 new PartyMember(new BaseStats(100, 100)),
                 new PartyMember(new BaseStats(100, 100)),
-                new PartyMember(new BaseStats(100, 100)));
+                player
+            );
 
             var gameActor = game.AddActor("Game");
 
-            var spellCaster = new SpellCaster(gameActor, party, spells, new Cooldown(1f));
+            var spellCaster = new SpellCaster(gameActor, party, spells, player, new Cooldown(1f));
             new BattleSystem(gameActor, party);
 
             var castingBarActor = layoutActors.GetActor("casting-bar");

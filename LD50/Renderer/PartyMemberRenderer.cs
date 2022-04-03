@@ -66,7 +66,11 @@ namespace LD50.Renderer
             spriteBatch.FillRectangle(healthFill, Color.Red, transform.Depth - 5);
             spriteBatch.DrawRectangle(health.Rectangle, outlineColor, 1f, transform.Depth - 10);
 
-            spriteBatch.DrawRectangle(mana.Rectangle, Color.Blue, 1f, transform.Depth - 5);
+            // duplicate code alert!! should have a DrawFilledBar helper method
+            var manaFill = new Rectangle(mana.Rectangle.Location,
+                new Point((int) (mana.Rectangle.Width * this.partyMember.ManaPercent), mana.Rectangle.Height));
+            spriteBatch.FillRectangle(manaFill, Color.Blue, transform.Depth - 5);
+            spriteBatch.DrawRectangle(mana.Rectangle, outlineColor, 1f, transform.Depth - 10);
 
             int buffIndex = 0;
             var buffSize = new Point(buffsRegion.Rectangle.Height);

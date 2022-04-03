@@ -23,7 +23,7 @@ namespace LD50.Data
         public bool IsDead { get; }
         public Buffs Buffs { get; }
 
-        public PartyMemberStatus GetNext(float dt, int healsThisFrame, int damageThisFrame)
+        public PartyMemberStatus GetNext(float dt, int healsThisFrame, int damageThisFrame, int spentManaThisFrame)
         {
             healsThisFrame += Buffs.GetHealingThisTick(dt);
             damageThisFrame += Buffs.GetDamageThisTick(dt);
@@ -32,7 +32,7 @@ namespace LD50.Data
             var newDamageTaken = this.damageTaken - healsThisFrame + damageThisFrame;
             newDamageTaken = Math.Clamp(newDamageTaken, 0, BaseStats.MaxHealth);
 
-            var exactNewMana = Mana + CalculateRegeneratedMana(dt) + this.manaFraction;
+            var exactNewMana = Mana + CalculateRegeneratedMana(dt) + this.manaFraction - spentManaThisFrame;
             exactNewMana = Math.Clamp(exactNewMana, 0, BaseStats.MaxMana);
             var roundedMana = (int) exactNewMana;
             var newManaFraction = exactNewMana - roundedMana;
