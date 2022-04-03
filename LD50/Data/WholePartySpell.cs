@@ -6,7 +6,7 @@ namespace LD50.Data
 {
     public class WholePartySpell : ISpell 
     {
-        public WholePartySpell(string name, float castDuration, int manaCost, int healingAmountWhenComplete, IBuff buffAppliedWhenComplete, float cooldown, int keybind, int frameIndex = 1)
+        public WholePartySpell(string name, float castDuration, int manaCost, int healingAmountWhenComplete, IBuff buffAppliedWhenComplete, float cooldown, int keybind = 0, int frameIndex = 1)
         {
             Name = name;
             ManaCost = manaCost;
@@ -40,5 +40,7 @@ namespace LD50.Data
         {
             return $"Press {Keybind}";
         }
+
+        public bool AttemptedRecently { get; set; }
     }
 }

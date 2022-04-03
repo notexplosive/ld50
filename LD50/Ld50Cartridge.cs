@@ -49,7 +49,7 @@ namespace LD50
                 new SingleTargetSpell("Greater Heal", 6f, 50, 50, EmptyBuff.Create(), 0f, 2, 1),
                 new SingleTargetSpell("Healing Salve", 0.5f, 40, 0, HealOverTimeBuff.Create(6f, 35), 8f, 3, 2),
                 new SingleTargetSpell("Power Word: Shield", 0.5f, 40, 0, ShieldBuff.Create(5f, 100), 10f, 4, 3),
-                new WholePartySpell("Divine Explosion", 0f, 50, 25, EmptyBuff.Create(), 40f, 5, 3)
+                new WholePartySpell("Divine Explosion", 0f, 50, 25, EmptyBuff.Create(), 40f, 5, 4)
                 // new SingleTargetSpell("Clear Debuff"),
                 // new SingleTargetSpell("Revive")
             };
@@ -111,7 +111,7 @@ namespace LD50
             this.chat = new Chat();
             var gameActor = game.AddActor("Game");
 
-            var spellCaster = new SpellCaster(gameActor, this.party, spells, player, new Cooldown(1f));
+            var spellCaster = new SpellCaster(gameActor, this.party, spells, player, new Cooldown(1f), new SpellLogger(chat));
             var battleSystem = new BattleSystem(gameActor, this.party, new BattleLogger(this.chat));
 
             battleSystem.EncounterEnded += this.party.ReviveAnyDeadPartyMembers;

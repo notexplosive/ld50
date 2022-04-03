@@ -10,7 +10,7 @@ namespace LD50.Data
     {
         public string Name { get; }
 
-        public SingleTargetSpell(string name, float castDuration, int manaCost, int healingAmountWhenComplete, IBuff buffAppliedWhenComplete, float cooldown, int keybind, int frameIndex = 0)
+        public SingleTargetSpell(string name, float castDuration, int manaCost, int healingAmountWhenComplete, IBuff buffAppliedWhenComplete, float cooldown, int keybind = 0, int frameIndex = 0)
         {
             Name = name;
             ManaCost = manaCost;
@@ -40,5 +40,7 @@ namespace LD50.Data
         {
             return $"Mouse over target and press {Keybind}";
         }
+
+        public bool AttemptedRecently { get; set; }
     }
 }

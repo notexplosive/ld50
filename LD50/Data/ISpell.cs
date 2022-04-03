@@ -91,5 +91,17 @@ namespace LD50.Data
         }
 
         string CastInstructions();
+
+        void OnAttempt()
+        {
+            AttemptedRecently = true;
+        }
+
+        void AcknowledgeAttempt()
+        {
+            AttemptedRecently = false;
+        }
+
+        bool AttemptedRecently { get; set; }
     }
 }

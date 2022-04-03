@@ -27,7 +27,7 @@ namespace LD50Tests
         {
             var spells = new ISpell[]
             {
-                new WholePartySpell("Test Spell", 0f, 5, 10, EmptyBuff.Create(), 10f)
+                new WholePartySpell("Test Spell", 0f, 5, 10, EmptyBuff.Create(), 10f, 0)
             };
             var party = new Party();
             var player = new PartyMember(new BaseStats(10, 8));

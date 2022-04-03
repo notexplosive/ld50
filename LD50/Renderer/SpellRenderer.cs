@@ -37,6 +37,12 @@ namespace LD50.Renderer
             {
                 spriteBatch.DrawRectangle(this.boundingRectangle.Rect, Color.LightGreen, 5f, transform.Depth - 15);
             }
+
+            if (this.spell.AttemptedRecently)
+            {
+                spriteBatch.DrawRectangle(this.boundingRectangle.Rect, Color.White, 5f, transform.Depth - 20);
+                this.spell.AcknowledgeAttempt();
+            }
             
             var spellsSheet = MachinaClient.Assets.GetMachinaAsset<SpriteSheet>("spells");
             spellsSheet.DrawFrame(spriteBatch, this.spell.FrameIndex, this.boundingRectangle.Rect.Center.ToVector2(), 1f, 0f, XYBool.False, transform.Depth - 10, Color.White, true);

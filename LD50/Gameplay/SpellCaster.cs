@@ -18,8 +18,9 @@ namespace LD50.Gameplay
         private readonly PartyMember player;
         public Cooldown GlobalCooldown { get; }
 
-        public SpellCaster(Actor actor, Party party, ISpell[] spells, PartyMember player, Cooldown globalCooldown) : base(actor)
+        public SpellCaster(Actor actor, Party party, ISpell[] spells, PartyMember player, Cooldown globalCooldown, SpellLogger logger = null) : base(actor)
         {
+            this.logger = logger;
             this.player = player;
             this.spells = spells;
             this.party = party;
@@ -92,7 +93,8 @@ namespace LD50.Gameplay
         }
 
         public static readonly float BufferWindow = 0.5f;
-        
+        private readonly SpellLogger logger;
+
         public bool TryToCastSpell(PendingSpell pendingSpell, bool isFromBuffer = false)
         {
             if (!isFromBuffer)
@@ -103,18 +105,22 @@ namespace LD50.Gameplay
             if (this.player.Status.IsDead)
             {
                 ClearBufferedSpell();
-                MachinaClient.Print("You are dead");
+                this.logger.Log("You are dead.");
+
                 return false;
             }
             
             if (!this.castingTween.IsDone())
             {
-                MachinaClient.Print("Casting in progress");
                 var timeLeft = InProgressSpell.Spell.CastDuration - this.percentTweenable.CurrentValue * InProgressSpell.Spell.CastDuration;
 
                 if (timeLeft < SpellCaster.BufferWindow)
                 {
                     BufferSpell(pendingSpell);
+                }
+                else
+                {
+                    this.logger.Log("You're already casting something else.");
                 }
 
                 return false;
@@ -126,9 +132,13 @@ namespace LD50.Gameplay
                 {
                     BufferSpell(pendingSpell);
                 }
-
-                MachinaClient.Print("global cooldown");
+                else
+                {
+                    this.logger.Log("Not ready yet.");
+                }
+                
                 return false;
+
             }
 
             var spell = pendingSpell.Spell;
@@ -136,11 +146,13 @@ namespace LD50.Gameplay
             
             if (!spell.Cooldown.IsReady())
             {
-                MachinaClient.Print("that spell is on cooldown");
-
                 if (spell.Cooldown.RemainingTime() < SpellCaster.BufferWindow)
                 {
                     BufferSpell(pendingSpell);
+                }
+                else
+                {
+                    this.logger.Log("Not ready yet.");
                 }
 
                 return false;
@@ -148,7 +160,7 @@ namespace LD50.Gameplay
 
             if (hoveredPartyMember == null && spell is SingleTargetSpell)
             {
-                MachinaClient.Print("No target");    
+                this.logger.Log("You need to be hovering a target.");
                 return false;
             }
 
@@ -158,8 +170,8 @@ namespace LD50.Gameplay
                 {
                     ClearBufferedSpell();
                 }
-                
-                MachinaClient.Print("Not enough mana");    
+
+                this.logger.Log("Not enough mana.");
                 return false;
             }
 
@@ -197,19 +209,21 @@ namespace LD50.Gameplay
 
             if (i >= this.spells.Length)
             {
-                MachinaClient.Print("no spell at that index", i);
                 return false;
             }
             
             var spell = this.spells[i];
             var pendingSpell = new PendingSpell(hoveredPartyMember, spell);
 
-            return TryToCastSpell(pendingSpell);
+            var success = TryToCastSpell(pendingSpell);
+
+            pendingSpell.Spell.OnAttempt();
+            
+            return success;
         }
 
         private void BufferSpell(PendingSpell pendingSpell)
         {
-            MachinaClient.Print("buffered");
             BufferedSpell = pendingSpell;
         }
 
