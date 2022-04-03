@@ -53,16 +53,24 @@ namespace LD50
                 return result.ToArray();
             }
 
+            LayoutNode[] PartyNodes()
+            {
+                var result = new List<LayoutNode>();
+
+                foreach (var partyMemberName in partyMemberLayoutNames)
+                {
+                    result.Add(LayoutNode.Leaf(partyMemberName, LayoutSize.StretchedBoth()));
+                }
+
+                return result.ToArray();
+            }
+
             var layout = LayoutNode.VerticalParent("screen", LayoutSize.Pixels(new Point(1600, 900)),
                 new LayoutStyle(new Point(25, 25)),
                 LayoutNode.Spacer(50),
                 LayoutNode.HorizontalParent("party", LayoutSize.StretchedHorizontally(250),
                     new LayoutStyle(new Point(25, 25), 15, Alignment.Center),
-                    LayoutNode.Leaf(partyMemberLayoutNames[0], LayoutSize.StretchedBoth()),
-                    LayoutNode.Leaf(partyMemberLayoutNames[1], LayoutSize.StretchedBoth()),
-                    LayoutNode.Leaf(partyMemberLayoutNames[2], LayoutSize.StretchedBoth()),
-                    LayoutNode.Leaf(partyMemberLayoutNames[3], LayoutSize.StretchedBoth()),
-                    LayoutNode.Leaf(partyMemberLayoutNames[4], LayoutSize.StretchedBoth())
+                    PartyNodes()
                 ),
                 LayoutNode.Leaf("casting-bar", LayoutSize.StretchedHorizontally(25)),
                 LayoutNode.HorizontalParent("spells", LayoutSize.StretchedBoth(),
