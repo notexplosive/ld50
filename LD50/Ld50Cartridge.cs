@@ -107,6 +107,8 @@ namespace LD50
             var spellCaster = new SpellCaster(gameActor, party, spells, player, new Cooldown(1f));
             var battleSystem = new BattleSystem(gameActor, party);
 
+            battleSystem.EncounterEnded += party.ReviveAnyDeadPartyMembers;
+            
             new BattleRenderer(layoutActors.GetActor("screen"), battleSystem);
 
             var castingBarActor = layoutActors.GetActor("casting-bar");

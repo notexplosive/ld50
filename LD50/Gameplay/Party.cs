@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using Machina.Data;
 using Machina.Engine;
@@ -72,5 +73,16 @@ namespace LD50.Gameplay
         }
 
         public static NoiseBasedRNG random = new NoiseBasedRNG(123456);
+
+        public void ReviveAnyDeadPartyMembers()
+        {
+            foreach (var partyMember in this.partyMembers)
+            {
+                if (partyMember.Status.IsDead)
+                {
+                    partyMember.Revive();
+                }
+            }
+        }
     }
 }

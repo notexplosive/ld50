@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Machina.Components;
 using Machina.Data;
 using Machina.Engine;
@@ -7,6 +8,7 @@ namespace LD50.Gameplay
 {
     public class BattleSystem : BaseComponent
     {
+        public event Action EncounterEnded;
         public Encounter CurrentEncounter { get; private set; }
         private readonly Party party;
 
@@ -19,7 +21,6 @@ namespace LD50.Gameplay
         public void StartNewEncounter(Encounter encounter)
         {
             CurrentEncounter = encounter;
-            
             CurrentEncounter.StartCoroutines(actor.scene, party);
         }
 
@@ -32,6 +33,7 @@ namespace LD50.Gameplay
                     new Monster(100, 10, 2f));
                 StartNewEncounter(encounter);
                 yield return new WaitUntil(CurrentEncounter.IsFightOver);
+                EncounterEnded?.Invoke();
                 yield return new WaitSeconds(5);
             }
         }

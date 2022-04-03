@@ -16,10 +16,12 @@ namespace LD50.Renderer
         private readonly BakedLayout layout;
         private readonly PartyMember partyMember;
         private readonly SpellCaster spellCaster;
+        private readonly Hoverable hoverable;
 
         public PartyMemberRenderer(Actor actor, PartyMember partyMember, SpellCaster spellCaster) : base(actor)
         {
             this.boundingRect = RequireComponent<BoundingRect>();
+            this.hoverable = RequireComponent<Hoverable>();
             this.spellCaster = spellCaster;
             this.partyMember = partyMember;
 
@@ -61,6 +63,13 @@ namespace LD50.Renderer
             if (this.spellCaster.InProgressSpell.TargetPartyMember == this.partyMember)
             {
                 spriteBatch.DrawRectangle(root.Rectangle, Color.Yellow, 5f, transform.Depth - 20);
+            }
+            
+            if (this.hoverable.IsHovered)
+            {
+                var hoverRectangle = root.Rectangle;
+                hoverRectangle.Inflate(10, 10);
+                spriteBatch.DrawRectangle(hoverRectangle, Color.LightGreen, 3f, transform.Depth - 20);
             }
 
             var nameText = new BoundedText(nameRegion.Size, Alignment.Center, Overflow.Ignore,

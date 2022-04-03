@@ -86,5 +86,13 @@ namespace LD50.Gameplay
                 yield return new WaitSeconds(1f); // todo: maybe each party member should have a different attack speed
             }
         }
+
+        public void Revive()
+        {
+            if (Status.IsDead)
+            {
+                this.pendingHeals += Status.BaseStats.MaxHealth / 10;
+            }
+        }
     }
 }
