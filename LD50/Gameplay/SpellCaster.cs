@@ -86,6 +86,12 @@ namespace LD50.Gameplay
         {
             var hoveredPartyMember = GetHoveredPartyMember();
 
+            if (this.player.Status.IsDead)
+            {
+                MachinaClient.Print("You are dead");
+                return false;
+            }
+            
             if (i >= this.spells.Length)
             {
                 MachinaClient.Print("no spell at that index", i);
@@ -167,6 +173,11 @@ namespace LD50.Gameplay
         private void WhenPartyMemberDies(PartyMember member)
         {
             if (InProgressSpell.TargetPartyMember == member)
+            {
+                CancelInProgressSpell();
+            }
+
+            if (member == this.player)
             {
                 CancelInProgressSpell();
             }

@@ -30,7 +30,7 @@ namespace LD50.Gameplay
             {
                 var encounter = new Encounter(
                     new Monster(100, 10, 2f),
-                    new Monster(100, 10, 2f));
+                    new Monster(100, 3, 0.1f));
                 StartNewEncounter(encounter);
                 yield return new WaitUntil(CurrentEncounter.IsFightOver);
                 EncounterEnded?.Invoke();

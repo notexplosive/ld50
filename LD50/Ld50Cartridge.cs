@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using LD50.Data;
 using LD50.Gameplay;
 using LD50.Renderer;
@@ -15,6 +16,8 @@ namespace LD50
 {
     internal class Ld50Cartridge : GameCartridge
     {
+        private Party party;
+
         public Ld50Cartridge() : base(new Point(1600, 900), ResizeBehavior.KeepAspectRatio)
         {
         }
@@ -94,7 +97,7 @@ namespace LD50
 
             var player = new PartyMember(new BaseStats(100, 500, 5), PartyRole.Healer);
 
-            var party = new Party(
+            this.party = new Party(
                 new PartyMember(new BaseStats(100, 100, 0, 5), PartyRole.Tank),
                 new PartyMember(new BaseStats(100, 100, 0, 10)),
                 new PartyMember(new BaseStats(100, 100, 0, 10)),
@@ -118,6 +121,7 @@ namespace LD50
             foreach (var name in partyMemberLayoutNames)
             {
                 var partyMember = party.GetMember(partyMemberIndex);
+                partyMember.Died += CheckGameOverStatus;
                 var partyMemberRoot = layoutActors.GetActor(name);
                 PartyMemberInterface.CreateFromActor(partyMemberRoot, partyMember, spellCaster);
                 partyMemberIndex++;
@@ -130,6 +134,15 @@ namespace LD50
             }
 
             game.StartCoroutine(battleSystem.CombatLoopCoroutine());
+        }
+
+        private void CheckGameOverStatus(PartyMember member)
+        {
+            var livingMembers = this.party.AllLivingMembers().ToArray();
+            if (!livingMembers.Any())
+            {
+                MachinaClient.Print("GAME OVER");
+            }
         }
 
         public override void PrepareDynamicAssets(AssetLoader loader, MachinaRuntime runtime)

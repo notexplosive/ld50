@@ -29,17 +29,18 @@ namespace LD50.Gameplay
         public void Update(float dt)
         {
             var nextStatus = Status.GetNext(dt, this.pendingHeals, this.pendingDamage, this.pendingSpentMana);
+            var previousStatus = Status;
 
-            if (!Status.IsDead && nextStatus.IsDead)
-            {
-                Status.Buffs.Clear();
-                Died?.Invoke(this);
-            }
-            
             Status = nextStatus;
             this.pendingDamage = 0;
             this.pendingHeals = 0;
             this.pendingSpentMana = 0;
+            
+            if (!previousStatus.IsDead && nextStatus.IsDead)
+            {
+                Status.Buffs.Clear();
+                Died?.Invoke(this);
+            }
         }
 
         public void TakeDamage(int damage)
