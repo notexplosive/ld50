@@ -20,7 +20,7 @@ namespace LD50.Gameplay
             while (true)
             {
                 yield return new WaitSeconds(1);
-                this.party.GetMember(0).TakeDamage(5);
+                this.party.GetMostThreateningPartyMember().TakeDamage(5);
             }
         }
     }

@@ -37,7 +37,7 @@ namespace LD50
                 new SingleTargetSpell("Slow Heal", 6f, 50, 50, EmptyBuff.Create(), 0f),
                 new SingleTargetSpell("Shield", 0.5f, 40, 0, ShieldBuff.Create(5f, 100), 10f),
                 new SingleTargetSpell("Heal Over Time", 0.5f, 40, 0, HealOverTimeBuff.Create(6f, 35), 8f),
-                new WholePartySpell("AoE Heal", 0f, 50, 25, EmptyBuff.Create(), 40f),
+                new WholePartySpell("AoE Heal", 0f, 50, 25, EmptyBuff.Create(), 40f)
                 // new SingleTargetSpell("Clear Debuff"),
                 // new SingleTargetSpell("Revive")
             };
@@ -52,7 +52,7 @@ namespace LD50
 
                 return result.ToArray();
             }
-            
+
             var layout = LayoutNode.VerticalParent("screen", LayoutSize.Pixels(new Point(1600, 900)),
                 new LayoutStyle(new Point(25, 25)),
                 LayoutNode.Spacer(50),
@@ -74,13 +74,13 @@ namespace LD50
 
             var layoutActors = new LayoutActors(game, layout.Bake());
 
-            var player = new PartyMember(new BaseStats(100, 100, 5));
-            
+            var player = new PartyMember(new BaseStats(100, 100, 5), PartyRole.Healer);
+
             var party = new Party(
-                new PartyMember(new BaseStats(100, 100)),
-                new PartyMember(new BaseStats(100, 100)),
-                new PartyMember(new BaseStats(100, 100)),
-                new PartyMember(new BaseStats(100, 100)),
+                new PartyMember(new BaseStats(100, 100), PartyRole.Tank),
+                new PartyMember(new BaseStats(100, 100), PartyRole.Damage),
+                new PartyMember(new BaseStats(100, 100), PartyRole.Damage),
+                new PartyMember(new BaseStats(100, 100), PartyRole.Damage),
                 player
             );
 
@@ -91,8 +91,8 @@ namespace LD50
 
             var castingBarActor = layoutActors.GetActor("casting-bar");
             new CastingBarRenderer(castingBarActor, spellCaster);
-            
-            int partyMemberIndex = 0;
+
+            var partyMemberIndex = 0;
             foreach (var name in partyMemberLayoutNames)
             {
                 var partyMember = party.GetMember(partyMemberIndex);

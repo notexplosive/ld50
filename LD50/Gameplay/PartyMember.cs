@@ -7,15 +7,17 @@ namespace LD50.Gameplay
     public class PartyMember
     {
         public PartyMemberStatus Status { get; private set; }
+        public PartyRole Role { get; }
         private int pendingDamage;
         private int pendingHeals;
         private int pendingSpentMana;
 
         public event PartyMemberEvent Died;
 
-        public PartyMember(BaseStats baseStats)
+        public PartyMember(BaseStats baseStats, PartyRole role = default)
         {
             Status = new PartyMemberStatus(baseStats, new Buffs(), 0, baseStats.MaxMana);
+            Role = role;
         }
 
         public float HealthPercent => (float)Status.Health / Status.BaseStats.MaxHealth;
