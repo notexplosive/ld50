@@ -17,11 +17,11 @@ namespace LD50.Gameplay
 
         public event PartyMemberEvent Died;
 
-        public PartyMember(BaseStats baseStats, PartyRole role = default)
+        public PartyMember(BaseStats baseStats, string name = "P.T. Member", PartyRole role = default)
         {
             Status = new PartyMemberStatus(baseStats, new Buffs(), 0, baseStats.MaxMana);
             Role = role;
-            Name = GetHashCode().ToString();
+            Name = name;
         }
 
         public float HealthPercent => (float)Status.Health / Status.BaseStats.MaxHealth;

@@ -97,13 +97,13 @@ namespace LD50
 
             var layoutActors = new LayoutActors(game, layout.Bake());
 
-            var player = new PartyMember(new BaseStats(100, 500, 5), PartyRole.Healer);
+            var player = new PartyMember(new BaseStats(100, 500, 5), "Player", PartyRole.Healer);
 
             this.party = new Party(
-                new PartyMember(new BaseStats(100, 100, 0, 5), PartyRole.Tank),
-                new PartyMember(new BaseStats(100, 100, 0, 10)),
-                new PartyMember(new BaseStats(100, 100, 0, 10)),
-                new PartyMember(new BaseStats(100, 100, 0, 10)),
+                new PartyMember(new BaseStats(100, 100, 0, 5), "Terry", PartyRole.Tank),
+                new PartyMember(new BaseStats(100, 100, 0, 10), "Miriam"),
+                new PartyMember(new BaseStats(100, 100, 0, 10), "Rodney"),
+                new PartyMember(new BaseStats(100, 100, 0, 10), "Helen"),
                 player
             );
 

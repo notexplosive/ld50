@@ -74,7 +74,7 @@ namespace LD50.Renderer
 
             var nameText = new BoundedText(nameRegion.Size, Alignment.Center, Overflow.Ignore,
                 new FormattedText(
-                    new FormattedTextFragment("Party Member Name", Ld50Cartridge.FontMetrics, Color.White)));
+                    new FormattedTextFragment(this.partyMember.Name, Ld50Cartridge.FontMetrics, Color.White)));
 
             foreach (var item in nameText.GetRenderedText())
             {
