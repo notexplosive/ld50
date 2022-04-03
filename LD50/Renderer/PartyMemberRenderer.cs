@@ -26,11 +26,13 @@ namespace LD50.Renderer
             var rawLayout = LayoutNode.HorizontalParent("root", LayoutSize.Pixels(this.boundingRect.Size),
                 new LayoutStyle(),
                 LayoutNode.Leaf("portrait", LayoutSize.Pixels(new Point(this.boundingRect.Size.Y))),
+                LayoutNode.Spacer(10),
                 LayoutNode.VerticalParent("bars", LayoutSize.StretchedBoth(), new LayoutStyle(padding: 4),
                     LayoutNode.Leaf("name", LayoutSize.StretchedHorizontally(44)),
                     LayoutNode.Leaf("health", LayoutSize.StretchedBoth()),
                     LayoutNode.Leaf("mana", LayoutSize.StretchedBoth()),
-                    LayoutNode.Leaf("buffs", LayoutSize.StretchedBoth())
+                    LayoutNode.Leaf("buffs", LayoutSize.StretchedBoth()),
+                    LayoutNode.Spacer(5)
                 ),
                 LayoutNode.Leaf("role",
                     LayoutSize.Pixels(new Point(this.boundingRect.Size.Y / 2, this.boundingRect.Size.Y)))
@@ -69,8 +71,7 @@ namespace LD50.Renderer
             {
                 item.Draw(spriteBatch, nameRegion.PositionRelativeToRoot, 0f, transform.Depth);
             }
-            
-            
+
             spriteBatch.DrawRectangle(root.Rectangle, outlineColor, 1f, transform.Depth);
             spriteBatch.DrawRectangle(portrait.Rectangle, outlineColor, 1f, transform.Depth);
 
