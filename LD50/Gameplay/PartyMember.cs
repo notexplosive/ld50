@@ -49,11 +49,21 @@ namespace LD50.Gameplay
 
         public void TakeHeal(int heal)
         {
+            if (Status.IsDead)
+            {
+                return;
+            }
+            
             this.pendingHeals += heal;
         }
 
         public void GainBuff(IBuff buff)
         {
+            if (Status.IsDead)
+            {
+                return;
+            }
+            
             Status.Buffs.AddBuff(buff);
         }
 
