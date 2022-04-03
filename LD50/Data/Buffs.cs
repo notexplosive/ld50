@@ -14,7 +14,7 @@ namespace LD50.Data
             this.list.Add(buff);
         }
 
-        public int CalculateAbsorbedDamage(int incomingDamage)
+        public int CalculateDamageAfterAbsorb(int incomingDamage)
         {
             if (incomingDamage == 0)
             {

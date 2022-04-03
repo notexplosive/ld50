@@ -21,9 +21,9 @@ namespace LD50.Gameplay
         public PartyMemberStatus Status { get; private set; }
         public PartyRole Role { get; }
         public PartyPortrait Portrait { get; }
-        private int pendingDamage;
-        private int pendingHeals;
-        private int pendingSpentMana;
+        public int PendingDamage { get; private set; }
+        public int PendingHeals { get; private set; }
+        public int PendingSpentMana { get; private set; }
 
         public event PartyMemberEvent Died;
 
@@ -41,13 +41,14 @@ namespace LD50.Gameplay
 
         public void Update(float dt)
         {
-            var nextStatus = Status.GetNext(dt, this.pendingHeals, this.pendingDamage, this.pendingSpentMana);
+            var nextStatus = Status.GetNext(dt, this.PendingHeals, this.PendingDamage, this.PendingSpentMana);
             var previousStatus = Status;
 
             Status = nextStatus;
-            this.pendingDamage = 0;
-            this.pendingHeals = 0;
-            this.pendingSpentMana = 0;
+
+            this.PendingDamage = 0;
+            this.PendingHeals = 0;
+            this.PendingSpentMana = 0;
             
             if (!previousStatus.IsDead && nextStatus.IsDead)
             {
@@ -58,7 +59,7 @@ namespace LD50.Gameplay
 
         public void TakeDamage(int damage)
         {
-            this.pendingDamage += damage;
+            this.PendingDamage += damage;
         }
 
         public void TakeHeal(int heal)
@@ -68,7 +69,7 @@ namespace LD50.Gameplay
                 return;
             }
             
-            this.pendingHeals += heal;
+            this.PendingHeals += heal;
         }
 
         public void GainBuff(IBuff buff)
@@ -88,7 +89,7 @@ namespace LD50.Gameplay
 
         public void ConsumeMana(int manaCost)
         {
-            this.pendingSpentMana += manaCost;
+            this.PendingSpentMana += manaCost;
         }
 
         public IEnumerator<ICoroutineAction> AttackCoroutine(Encounter encounter)
@@ -105,7 +106,7 @@ namespace LD50.Gameplay
         {
             if (Status.IsDead)
             {
-                this.pendingHeals += Status.BaseStats.MaxHealth / 10;
+                this.PendingHeals += Status.BaseStats.MaxHealth / 10;
             }
         }
     }

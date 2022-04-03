@@ -13,11 +13,15 @@ namespace LD50.Renderer
     public class PartyMemberRenderer : BaseComponent
     {
         private readonly BoundingRect boundingRect;
+        private readonly Hoverable hoverable;
         private readonly BakedLayout layout;
+        private readonly NinepatchSheet ninepatch;
         private readonly PartyMember partyMember;
         private readonly SpellCaster spellCaster;
-        private readonly Hoverable hoverable;
-        private readonly NinepatchSheet ninepatch;
+        private float timer;
+        private int damageAbsorbedThisFrame;
+        private int damageThisFrame;
+        private int healthThisFrame;
 
         public PartyMemberRenderer(Actor actor, PartyMember partyMember, SpellCaster spellCaster) : base(actor)
         {
@@ -45,6 +49,52 @@ namespace LD50.Renderer
             this.layout = rawLayout.Bake();
         }
 
+        public override void Update(float dt)
+        {
+            this.healthThisFrame += this.partyMember.Status.GetHealingTakenThisFrame(dt, this.partyMember.PendingHeals);
+            this.damageThisFrame += this.partyMember.Status.GetDamageTakenThisFrame(dt, this.partyMember.PendingDamage);
+            this.damageAbsorbedThisFrame +=
+                this.partyMember.Status.GetAbsorbedDamageThisFrame(dt, this.partyMember.PendingDamage);
+
+            this.timer -= dt;
+            
+            if (this.timer < 0)
+            {
+                if (healthThisFrame > 0)
+                {
+                    SpawnTextPopup(Color.LightGreen, healthThisFrame.ToString());
+                }
+
+                if (damageThisFrame > 0)
+                {
+                    SpawnTextPopup(Color.IndianRed, damageThisFrame.ToString());
+                }
+
+                if (damageAbsorbedThisFrame > 0)
+                {
+                    SpawnTextPopup(Color.Yellow, $"({damageAbsorbedThisFrame})");
+                }
+
+                this.timer = 0.25f;
+                this.healthThisFrame = 0;
+                this.damageThisFrame = 0;
+                this.damageAbsorbedThisFrame = 0;
+            }
+        }
+
+        private void SpawnTextPopup(Color color, string value)
+        {
+            var position = this.boundingRect.Rect.Location.ToVector2() +
+                new Vector2(this.boundingRect.Width * MachinaClient.RandomDirty.NextFloat(),
+                    this.boundingRect.Height * MachinaClient.RandomDirty.NextFloat());
+
+            var numberActor = this.actor.scene.AddActor("Number", position);
+            numberActor.transform.Depth = transform.Depth - 1000;
+            new BoundingRect(numberActor, new Point(100, 100)).SetOffsetToCenter();
+            new BoundedTextRenderer(numberActor, value, MachinaClient.Assets.GetSpriteFont("TitleFont"), color, Alignment.Center, Overflow.Ignore).EnableDropShadow(Color.Black);
+            new AscendAndFadeOutText(numberActor);
+        }
+
         public override void Draw(SpriteBatch spriteBatch)
         {
             var root = this.layout.GetNode("root", this.boundingRect.Location);
@@ -54,20 +104,23 @@ namespace LD50.Renderer
             var buffsRegion = this.layout.GetNode("buffs", this.boundingRect.Location);
             var nameRegion = this.layout.GetNode("name", this.boundingRect.Location);
             var roleRegion = this.layout.GetNode("role", this.boundingRect.Location);
-            
-            this.ninepatch.DrawFullNinepatch(spriteBatch, root.Rectangle, NinepatchSheet.GenerationDirection.Outer, transform.Depth + 100);
+
+            this.ninepatch.DrawFullNinepatch(spriteBatch, root.Rectangle, NinepatchSheet.GenerationDirection.Outer,
+                transform.Depth + 100);
 
             var rolesImage = MachinaClient.Assets.GetMachinaAsset<SpriteSheet>("roles");
-            rolesImage.DrawFrame(spriteBatch, (int) this.partyMember.Role, roleRegion.Rectangle.Center.ToVector2(), 1f, 0f, XYBool.False, transform.Depth - 10, Color.White, true);
-            
+            rolesImage.DrawFrame(spriteBatch, (int) this.partyMember.Role, roleRegion.Rectangle.Center.ToVector2(), 1f,
+                0f, XYBool.False, transform.Depth - 10, Color.White);
+
             var portraitImage = MachinaClient.Assets.GetMachinaAsset<SpriteSheet>("portraits");
-            portraitImage.DrawFrame(spriteBatch, (int)this.partyMember.Portrait, portraitRegion.Rectangle.Center.ToVector2(), 1f, 0f, XYBool.False, transform.Depth - 10, Color.White, true);
+            portraitImage.DrawFrame(spriteBatch, (int) this.partyMember.Portrait,
+                portraitRegion.Rectangle.Center.ToVector2(), 1f, 0f, XYBool.False, transform.Depth - 10, Color.White);
 
             if (this.spellCaster.InProgressSpell.TargetPartyMember == this.partyMember)
             {
                 spriteBatch.DrawRectangle(root.Rectangle, Color.Yellow, 5f, transform.Depth - 20);
             }
-            
+
             if (this.hoverable.IsHovered)
             {
                 var hoverRectangle = root.Rectangle;
