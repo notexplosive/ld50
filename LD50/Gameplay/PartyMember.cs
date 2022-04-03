@@ -25,6 +25,7 @@ namespace LD50.Gameplay
 
             if (!Status.IsDead && nextStatus.IsDead)
             {
+                Status.Buffs.Clear();
                 Died?.Invoke(this);
             }
             

@@ -100,5 +100,10 @@ namespace LD50.Data
         {
             return this.list[index];
         }
+
+        public void Clear()
+        {
+            this.list.Clear();
+        }
     }
 }
