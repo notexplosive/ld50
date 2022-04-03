@@ -111,7 +111,7 @@ namespace LD50
             this.chat = new Chat();
             var gameActor = game.AddActor("Game");
 
-            var spellCaster = new SpellCaster(gameActor, this.party, spells, player, new Cooldown(1f), new SpellLogger(chat));
+            var spellCaster = new SpellCaster(gameActor, this.party, spells, player, new Cooldown(1f), new SpellLogger(this.chat));
             var battleSystem = new BattleSystem(gameActor, this.party, new BattleLogger(this.chat));
 
             battleSystem.EncounterEnded += this.party.ReviveAnyDeadPartyMembers;

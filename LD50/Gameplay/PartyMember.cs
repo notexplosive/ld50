@@ -41,14 +41,14 @@ namespace LD50.Gameplay
 
         public void Update(float dt)
         {
-            var nextStatus = Status.GetNext(dt, this.PendingHeals, this.PendingDamage, this.PendingSpentMana);
+            var nextStatus = Status.GetNext(dt, PendingHeals, PendingDamage, PendingSpentMana);
             var previousStatus = Status;
 
             Status = nextStatus;
 
-            this.PendingDamage = 0;
-            this.PendingHeals = 0;
-            this.PendingSpentMana = 0;
+            PendingDamage = 0;
+            PendingHeals = 0;
+            PendingSpentMana = 0;
             
             if (!previousStatus.IsDead && nextStatus.IsDead)
             {
@@ -59,7 +59,7 @@ namespace LD50.Gameplay
 
         public void TakeDamage(int damage)
         {
-            this.PendingDamage += damage;
+            PendingDamage += damage;
         }
 
         public void TakeHeal(int heal)
@@ -69,7 +69,7 @@ namespace LD50.Gameplay
                 return;
             }
             
-            this.PendingHeals += heal;
+            PendingHeals += heal;
         }
 
         public void GainBuff(IBuff buff)
@@ -89,7 +89,7 @@ namespace LD50.Gameplay
 
         public void ConsumeMana(int manaCost)
         {
-            this.PendingSpentMana += manaCost;
+            PendingSpentMana += manaCost;
         }
 
         public IEnumerator<ICoroutineAction> AttackCoroutine(Encounter encounter)
@@ -106,7 +106,7 @@ namespace LD50.Gameplay
         {
             if (Status.IsDead)
             {
-                this.PendingHeals += Status.BaseStats.MaxHealth / 10;
+                PendingHeals += Status.BaseStats.MaxHealth / 10;
             }
         }
     }

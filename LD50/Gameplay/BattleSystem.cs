@@ -22,17 +22,16 @@ namespace LD50.Gameplay
 
         public void StartNewEncounter(Encounter encounter)
         {
-            logger.Log("Encounter started!");
+            this.logger.Log("Encounter started!");
             CurrentEncounter = encounter;
-            CurrentEncounter.StartCoroutines(actor.scene, party);
+            CurrentEncounter.StartCoroutines(this.actor.scene, this.party);
         }
 
         public IEnumerator<ICoroutineAction> CombatLoopCoroutine()
         {
             while (true)
             {
-                var encounter = new Encounter(
-                    logger,
+                var encounter = new Encounter(this.logger,
                     new Monster(100, 10, 2f),
                     new Monster(100, 3, 0.1f));
                 StartNewEncounter(encounter);
@@ -44,8 +43,8 @@ namespace LD50.Gameplay
 
         private void FinishEncounter()
         {
-            logger.Log("Encounter ended!");
-            CurrentEncounter = new Encounter(logger);
+            this.logger.Log("Encounter ended!");
+            CurrentEncounter = new Encounter(this.logger);
             EncounterEnded?.Invoke();
         }
     }

@@ -15,14 +15,14 @@ namespace LD50.Gameplay
 
         public Encounter(BattleLogger logger, params Monster[] monsters)
         {
-            this.Logger = logger;
+            Logger = logger;
             this.monsters = monsters;
             this.random = new NoiseBasedRNG(5656);
         }
 
         public void StartCoroutines(Scene scene, Party party)
         {
-            foreach (var monster in monsters)
+            foreach (var monster in this.monsters)
             {
                 scene.StartCoroutine(monster.AttackCoroutine(party, this));
             }
