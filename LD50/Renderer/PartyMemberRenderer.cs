@@ -1,4 +1,5 @@
-﻿using LD50.Gameplay;
+﻿using System;
+using LD50.Gameplay;
 using Machina.Components;
 using Machina.Data;
 using Machina.Data.Layout;
@@ -18,10 +19,11 @@ namespace LD50.Renderer
         private readonly NinepatchSheet ninepatch;
         private readonly PartyMember partyMember;
         private readonly SpellCaster spellCaster;
-        private float timer;
         private int damageAbsorbedThisFrame;
         private int damageThisFrame;
         private int healthThisFrame;
+        private float timer;
+        private float shakeFrames;
 
         public PartyMemberRenderer(Actor actor, PartyMember partyMember, SpellCaster spellCaster) : base(actor)
         {
@@ -57,53 +59,72 @@ namespace LD50.Renderer
                 this.partyMember.Status.GetAbsorbedDamageThisFrame(dt, this.partyMember.PendingDamage);
 
             this.timer -= dt;
-            
+
             if (this.timer < 0)
             {
-                if (healthThisFrame > 0)
+                if (this.healthThisFrame > 0)
                 {
-                    SpawnTextPopup(Color.LightGreen, healthThisFrame.ToString());
+                    SpawnTextPopup(Color.LightGreen, this.healthThisFrame.ToString());
                 }
 
-                if (damageThisFrame > 0)
+                if (this.damageThisFrame > 0)
                 {
-                    SpawnTextPopup(Color.IndianRed, damageThisFrame.ToString());
+                    SpawnTextPopup(Color.IndianRed, this.damageThisFrame.ToString());
                 }
 
-                if (damageAbsorbedThisFrame > 0)
+                if (this.damageAbsorbedThisFrame > 0)
                 {
-                    SpawnTextPopup(Color.Yellow, $"({damageAbsorbedThisFrame})");
+                    SpawnTextPopup(Color.Yellow, $"({this.damageAbsorbedThisFrame})");
                 }
 
+                this.shakeFrames = Math.Min(this.damageThisFrame / 10f, 1f);
+                
                 this.timer = 0.25f;
                 this.healthThisFrame = 0;
                 this.damageThisFrame = 0;
                 this.damageAbsorbedThisFrame = 0;
             }
+
+            if (this.shakeFrames > 0)
+            {
+                this.shakeFrames -= dt;
+            }
         }
 
         private void SpawnTextPopup(Color color, string value)
         {
-            var position = this.boundingRect.Rect.Location.ToVector2() +
-                new Vector2(this.boundingRect.Width * MachinaClient.RandomDirty.NextFloat(),
-                    this.boundingRect.Height * MachinaClient.RandomDirty.NextFloat());
+            var portraitRegion = this.layout.GetNode("portrait", this.boundingRect.Location);
+            var rect = portraitRegion.Rectangle;
+            var position = rect.Location.ToVector2() +
+                           new Vector2(rect.Width * MachinaClient.RandomDirty.NextFloat(),
+                               rect.Height * MachinaClient.RandomDirty.NextFloat());
 
             var numberActor = this.actor.scene.AddActor("Number", position);
             numberActor.transform.Depth = transform.Depth - 1000;
             new BoundingRect(numberActor, new Point(100, 100)).SetOffsetToCenter();
-            new BoundedTextRenderer(numberActor, value, MachinaClient.Assets.GetSpriteFont("TitleFont"), color, Alignment.Center, Overflow.Ignore).EnableDropShadow(Color.Black);
+            new BoundedTextRenderer(numberActor, value, MachinaClient.Assets.GetSpriteFont("TitleFont"), color,
+                Alignment.Center, Overflow.Ignore).EnableDropShadow(Color.Black);
             new AscendAndFadeOutText(numberActor);
         }
 
         public override void Draw(SpriteBatch spriteBatch)
         {
-            var root = this.layout.GetNode("root", this.boundingRect.Location);
-            var portraitRegion = this.layout.GetNode("portrait", this.boundingRect.Location);
-            var health = this.layout.GetNode("health", this.boundingRect.Location);
-            var mana = this.layout.GetNode("mana", this.boundingRect.Location);
-            var buffsRegion = this.layout.GetNode("buffs", this.boundingRect.Location);
-            var nameRegion = this.layout.GetNode("name", this.boundingRect.Location);
-            var roleRegion = this.layout.GetNode("role", this.boundingRect.Location);
+            var shakeOffset = Vector2.Zero;
+            if (this.shakeFrames > 0)
+            {
+                shakeOffset = new Vector2(MachinaClient.RandomDirty.NextFloat() - 0.5f,
+                    MachinaClient.RandomDirty.NextFloat() - 0.5f) * 10;
+            }
+            
+            var location = (this.boundingRect.Location.ToVector2() + shakeOffset).ToPoint();
+            
+            var root = this.layout.GetNode("root", location);
+            var portraitRegion = this.layout.GetNode("portrait", location);
+            var health = this.layout.GetNode("health", location);
+            var mana = this.layout.GetNode("mana", location);
+            var buffsRegion = this.layout.GetNode("buffs", location);
+            var nameRegion = this.layout.GetNode("name", location);
+            var roleRegion = this.layout.GetNode("role", location);
 
             this.ninepatch.DrawFullNinepatch(spriteBatch, root.Rectangle, NinepatchSheet.GenerationDirection.Outer,
                 transform.Depth + 100);
