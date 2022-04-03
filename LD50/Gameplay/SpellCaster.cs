@@ -43,6 +43,11 @@ namespace LD50.Gameplay
         {
             if (state == ButtonState.Pressed)
             {
+                if (key == Keys.Escape)
+                {
+                    CancelInProgressSpell();
+                }
+                
                 if (key == Keys.D1)
                 {
                     TryToCastSpell(0);
