@@ -2,48 +2,30 @@
 {
     public readonly struct HealOverTimeBuff : IBuff
     {
-        private readonly float cachedHealAmount;
+        private readonly ValueOverTime valueOverTime;
 
-        public HealOverTimeBuff(float remainingDuration, int healthPerSecond, float cachedHealAmount = 0f)
+        public HealOverTimeBuff(ValueOverTime valueOverTime = default)
         {
-            RemainingDuration = remainingDuration;
-            HealthPerSecond = healthPerSecond;
-            this.cachedHealAmount = cachedHealAmount;
+            this.valueOverTime = valueOverTime;
         }
 
-        public int HealthPerSecond { get; }
-        public float RemainingDuration { get; }
+        public float RemainingDuration => this.valueOverTime.RemainingDuration;
 
         public IBuff GetNext(float dt)
         {
-            var healAmount = GetExactHealAmount(dt);
-
-            var newCache = healAmount - (int) healAmount;
-
-            return new HealOverTimeBuff(RemainingDuration - dt, HealthPerSecond, newCache);
+            var newValueOverTime = this.valueOverTime.GetUpdated(dt);
+            return new HealOverTimeBuff(newValueOverTime);
         }
 
         public int GetHealAmount(float dt)
         {
-            var healAmount = GetExactHealAmount(dt);
+            var healAmount = this.valueOverTime.GetExactAmount(dt);
             return (int) healAmount;
-        }
-
-        private float GetExactHealAmount(float dt)
-        {
-            var healAmount = HealthPerSecond * dt;
-
-            if (RemainingDuration < dt)
-            {
-                healAmount = HealthPerSecond * RemainingDuration;
-            }
-
-            return healAmount + this.cachedHealAmount;
         }
 
         public static IBuff Create(float duration, int totalHealing)
         {
-            return new HealOverTimeBuff(duration, (int) (totalHealing / duration));
+            return new HealOverTimeBuff(new ValueOverTime(duration, (int) (totalHealing / duration)));
         }
     }
 }

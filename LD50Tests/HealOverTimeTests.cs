@@ -10,7 +10,7 @@ namespace LD50Tests
         public void heal_over_time_works_non_incrementally_big_numbers()
         {
             var status = new PartyMemberStatus(new BaseStats(100, 100), new Buffs(), 50);
-            status.Buffs.AddBuff(new HealOverTimeBuff(3, 3));
+            status.Buffs.AddBuff(new HealOverTimeBuff(new ValueOverTime(3, 3)));
             
             
             var statusAfterOneSecond = status.GetNext(1f, 0, 0);
@@ -26,7 +26,7 @@ namespace LD50Tests
         public void heal_over_time_works_non_incrementally_small_numbers()
         {
             var status = new PartyMemberStatus(new BaseStats(100, 100), new Buffs(), 50);
-            status.Buffs.AddBuff(new HealOverTimeBuff(3, 1));
+            status.Buffs.AddBuff(new HealOverTimeBuff(new ValueOverTime(3, 1)));
             
             
             var halfSecond = status.GetNext(0.5f, 0, 0);
@@ -44,7 +44,7 @@ namespace LD50Tests
         public void heal_over_time_works_incrementally_big_numbers()
         {
             var status = new PartyMemberStatus(new BaseStats(100, 100), new Buffs(), 50);
-            status.Buffs.AddBuff(new HealOverTimeBuff(3, 3));
+            status.Buffs.AddBuff(new HealOverTimeBuff(new ValueOverTime(3, 3)));
             
             
             var statusAfterOneSecond = status.GetNext(1f, 0, 0);
@@ -60,7 +60,7 @@ namespace LD50Tests
         public void heal_over_time_works_incrementally_small_numbers()
         {
             var status = new PartyMemberStatus(new BaseStats(100, 100), new Buffs(), 50);
-            status.Buffs.AddBuff(new HealOverTimeBuff(3, 1));
+            status.Buffs.AddBuff(new HealOverTimeBuff(new ValueOverTime(3, 1)));
             
             
             var halfSecond = status.GetNext(0.5f, 0, 0);
