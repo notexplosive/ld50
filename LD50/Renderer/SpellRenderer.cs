@@ -25,7 +25,6 @@ namespace LD50.Renderer
 
         public override void Draw(SpriteBatch spriteBatch)
         {
-
             var ninepatch = MachinaClient.Assets.GetMachinaAsset<NinepatchSheet>("ui-patch");
             ninepatch.DrawFullNinepatch(spriteBatch, this.boundingRectangle.Rect, NinepatchSheet.GenerationDirection.Inner, transform.Depth);
             

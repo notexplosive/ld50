@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using LD50.Data;
 using LD50.Gameplay;
@@ -29,7 +30,6 @@ namespace LD50
         public override void OnGameLoad(GameSpecification specification, MachinaRuntime runtime)
         {
             SceneLayers.BackgroundColor = Color.Black;
-            SceneLayers.SamplerState = SamplerState.LinearWrap;
             Ld50Cartridge.FontMetrics = MachinaClient.Assets.GetSpriteFont("UIFont");
 
             var game = SceneLayers.AddNewScene();
@@ -45,11 +45,11 @@ namespace LD50
 
             var spells = new ISpell[]
             {
-                new SingleTargetSpell("Lesser Heal", 1.5f, 30, 20, EmptyBuff.Create(), 0f, 0),
-                new SingleTargetSpell("Greater Heal", 6f, 50, 50, EmptyBuff.Create(), 0f, 1),
-                new SingleTargetSpell("Healing Salve", 0.5f, 40, 0, HealOverTimeBuff.Create(6f, 35), 8f, 2),
-                new SingleTargetSpell("Power Word: Shield", 0.5f, 40, 0, ShieldBuff.Create(5f, 100), 10f, 3),
-                new WholePartySpell("Divine Explosion", 0f, 50, 25, EmptyBuff.Create(), 40f, 4)
+                new SingleTargetSpell("Lesser Heal", 1.5f, 30, 20, EmptyBuff.Create(), 0f, 1, 0),
+                new SingleTargetSpell("Greater Heal", 6f, 50, 50, EmptyBuff.Create(), 0f, 2, 1),
+                new SingleTargetSpell("Healing Salve", 0.5f, 40, 0, HealOverTimeBuff.Create(6f, 35), 8f, 3, 2),
+                new SingleTargetSpell("Power Word: Shield", 0.5f, 40, 0, ShieldBuff.Create(5f, 100), 10f, 4, 3),
+                new WholePartySpell("Divine Explosion", 0f, 50, 25, EmptyBuff.Create(), 40f, 5, 3)
                 // new SingleTargetSpell("Clear Debuff"),
                 // new SingleTargetSpell("Revive")
             };
@@ -141,11 +141,17 @@ namespace LD50
                 this.chat.PartyMemberSay(partyMember, "Welcome!");
             }
 
+            
+            var hoverableSpellTuples = new List<Tuple<Hoverable, ISpell>>();
+            
             foreach (var spell in spells)
             {
                 var spellRoot = layoutActors.GetActor(spell.Name);
                 SpellInterface.CreateFromActor(spellRoot, spellCaster, spell);
+                hoverableSpellTuples.Add(new Tuple<Hoverable, ISpell>(layoutActors.GetActor(spell.Name).GetComponent<Hoverable>(), spell));
             }
+
+            new TooltipRenderer(chatActor, hoverableSpellTuples.ToArray());
 
             game.StartCoroutine(battleSystem.CombatLoopCoroutine());
         }
@@ -166,6 +172,13 @@ namespace LD50
             {
                 var uiPatchImage = MachinaClient.Assets.GetTexture("ui-patch-sheet");
                 return new NinepatchSheet(uiPatchImage, uiPatchImage.Bounds, new Rectangle(6, 6, 24, 24),
+                    runtime.Painter);
+            });
+            
+            loader.AddMachinaAssetCallback("tooltip-patch", () =>
+            {
+                var uiPatchImage = MachinaClient.Assets.GetTexture("tooltip-sheet");
+                return new NinepatchSheet(uiPatchImage, uiPatchImage.Bounds, new Rectangle(7, 7, 37, 37),
                     runtime.Painter);
             });
             

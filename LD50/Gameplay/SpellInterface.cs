@@ -1,6 +1,7 @@
 ﻿using System.Runtime.CompilerServices;
 using LD50.Data;
 using LD50.Renderer;
+using Machina.Components;
 using Machina.Engine;
 
 namespace LD50.Gameplay
@@ -10,6 +11,7 @@ namespace LD50.Gameplay
         public static void CreateFromActor(Actor actor, SpellCaster spellCaster, ISpell spell)
         {
             new SpellRenderer(actor, spellCaster, spell);
+            new Hoverable(actor);
         }
     }
 }
