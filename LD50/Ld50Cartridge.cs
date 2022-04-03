@@ -65,19 +65,22 @@ namespace LD50
                 return result.ToArray();
             }
 
-            var layout = LayoutNode.VerticalParent("screen", LayoutSize.Pixels(new Point(1600, 900)),
+            var layout = LayoutNode.HorizontalParent("screen", LayoutSize.Pixels(new Point(1600, 900)),
                 new LayoutStyle(new Point(25, 25)),
-                LayoutNode.Spacer(50),
-                LayoutNode.HorizontalParent("party", LayoutSize.StretchedHorizontally(250),
-                    new LayoutStyle(new Point(25, 25), 15, Alignment.Center),
+                LayoutNode.VerticalParent("party", LayoutSize.StretchedBoth(),
+                    new LayoutStyle(new Point(15), 15, Alignment.TopLeft),
                     PartyNodes()
                 ),
-                LayoutNode.Leaf("casting-bar", LayoutSize.StretchedHorizontally(25)),
-                LayoutNode.HorizontalParent("spells", LayoutSize.StretchedBoth(),
-                    new LayoutStyle(new Point(25, 25), 15, Alignment.Center),
-                    SpellNodes()
-                ),
-                LayoutNode.Spacer(50)
+                LayoutNode.VerticalParent("right-half", LayoutSize.StretchedBoth(),
+                    new LayoutStyle(new Point(15), 15, Alignment.Center),
+                    LayoutNode.Leaf("chat", LayoutSize.StretchedBoth()),
+                    LayoutNode.VerticalParent("spells-zone", LayoutSize.StretchedHorizontally(250),
+                        new LayoutStyle(Point.Zero, 15, Alignment.BottomCenter),
+                        LayoutNode.Leaf("casting-bar", LayoutSize.StretchedHorizontally(25)),
+                        LayoutNode.HorizontalParent("spell-list", LayoutSize.StretchedHorizontally(150), new LayoutStyle(alignment: Alignment.BottomCenter),
+                            SpellNodes())
+                    )
+                )
             );
 
             var layoutActors = new LayoutActors(game, layout.Bake());
@@ -86,9 +89,9 @@ namespace LD50
 
             var party = new Party(
                 new PartyMember(new BaseStats(100, 100, 0, 5), PartyRole.Tank),
-                new PartyMember(new BaseStats(100, 100, 0, 10), PartyRole.Damage),
-                new PartyMember(new BaseStats(100, 100, 0, 10), PartyRole.Damage),
-                new PartyMember(new BaseStats(100, 100, 0, 10), PartyRole.Damage),
+                new PartyMember(new BaseStats(100, 100, 0, 10)),
+                new PartyMember(new BaseStats(100, 100, 0, 10)),
+                new PartyMember(new BaseStats(100, 100, 0, 10)),
                 player
             );
 
