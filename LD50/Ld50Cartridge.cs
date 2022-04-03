@@ -16,20 +16,21 @@ namespace LD50
 {
     internal class Ld50Cartridge : GameCartridge
     {
+        private Chat chat;
         private Party party;
 
         public Ld50Cartridge() : base(new Point(1600, 900), ResizeBehavior.KeepAspectRatio)
         {
         }
 
-        public static SpriteFontMetrics FontMetrics { private set; get; } 
+        public static SpriteFontMetrics FontMetrics { private set; get; }
 
         public override void OnGameLoad(GameSpecification specification, MachinaRuntime runtime)
         {
             SceneLayers.BackgroundColor = Color.Black;
             SceneLayers.SamplerState = SamplerState.LinearWrap;
             Ld50Cartridge.FontMetrics = MachinaClient.Assets.GetSpriteFont("UIFont");
-            
+
             var game = SceneLayers.AddNewScene();
 
             var partyMemberLayoutNames = new[]
@@ -87,7 +88,8 @@ namespace LD50
                     LayoutNode.VerticalParent("spells-zone", LayoutSize.StretchedHorizontally(250),
                         new LayoutStyle(Point.Zero, 15, Alignment.BottomCenter),
                         LayoutNode.Leaf("casting-bar", LayoutSize.StretchedHorizontally(25)),
-                        LayoutNode.HorizontalParent("spell-list", LayoutSize.StretchedHorizontally(150), new LayoutStyle(alignment: Alignment.BottomCenter),
+                        LayoutNode.HorizontalParent("spell-list", LayoutSize.StretchedHorizontally(150),
+                            new LayoutStyle(alignment: Alignment.BottomCenter),
                             SpellNodes())
                     )
                 )
@@ -105,26 +107,32 @@ namespace LD50
                 player
             );
 
+            this.chat = new Chat();
             var gameActor = game.AddActor("Game");
 
-            var spellCaster = new SpellCaster(gameActor, party, spells, player, new Cooldown(1f));
-            var battleSystem = new BattleSystem(gameActor, party);
-
-            battleSystem.EncounterEnded += party.ReviveAnyDeadPartyMembers;
+            var spellCaster = new SpellCaster(gameActor, this.party, spells, player, new Cooldown(1f));
+            var battleSystem = new BattleSystem(gameActor, this.party, new BattleLogger(chat));
             
+            battleSystem.EncounterEnded += this.party.ReviveAnyDeadPartyMembers;
+
             new BattleRenderer(layoutActors.GetActor("screen"), battleSystem);
 
             var castingBarActor = layoutActors.GetActor("casting-bar");
             new CastingBarRenderer(castingBarActor, spellCaster);
 
+            var chatActor = layoutActors.GetActor("chat");
+            new ChatRenderer(chatActor, this.chat);
+
             var partyMemberIndex = 0;
             foreach (var name in partyMemberLayoutNames)
             {
-                var partyMember = party.GetMember(partyMemberIndex);
+                var partyMember = this.party.GetMember(partyMemberIndex);
                 partyMember.Died += CheckGameOverStatus;
                 var partyMemberRoot = layoutActors.GetActor(name);
                 PartyMemberInterface.CreateFromActor(partyMemberRoot, partyMember, spellCaster);
                 partyMemberIndex++;
+
+                this.chat.PartyMemberSay(partyMember, "Welcome!");
             }
 
             foreach (var spell in spells)
@@ -138,10 +146,11 @@ namespace LD50
 
         private void CheckGameOverStatus(PartyMember member)
         {
+            this.chat.AppendColoredString($"{member.Name} has died", Color.Gray);
             var livingMembers = this.party.AllLivingMembers().ToArray();
             if (!livingMembers.Any())
             {
-                MachinaClient.Print("GAME OVER");
+                this.chat.AppendColoredString("The party has wiped. Game Over.", Color.Yellow);
             }
         }
 

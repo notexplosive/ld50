@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using LD50.Data;
 using Machina.Data;
@@ -10,9 +11,11 @@ namespace LD50.Gameplay
     {
         private readonly Monster[] monsters;
         private readonly NoiseBasedRNG random;
+        public BattleLogger Logger { get; }
 
-        public Encounter(params Monster[] monsters)
+        public Encounter(BattleLogger logger, params Monster[] monsters)
         {
+            this.Logger = logger;
             this.monsters = monsters;
             this.random = new NoiseBasedRNG(5656);
         }
@@ -21,7 +24,7 @@ namespace LD50.Gameplay
         {
             foreach (var monster in monsters)
             {
-                scene.StartCoroutine(monster.AttackCoroutine(party));
+                scene.StartCoroutine(monster.AttackCoroutine(party, this));
             }
 
             foreach (var partyMember in party.AllLivingMembers())

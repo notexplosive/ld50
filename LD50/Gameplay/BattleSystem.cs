@@ -11,15 +11,18 @@ namespace LD50.Gameplay
         public event Action EncounterEnded;
         public Encounter CurrentEncounter { get; private set; }
         private readonly Party party;
+        private readonly BattleLogger logger;
 
-        public BattleSystem(Actor actor, Party party) : base(actor)
+        public BattleSystem(Actor actor, Party party, BattleLogger logger) : base(actor)
         {
+            this.logger = logger;
             this.party = party;
-            CurrentEncounter = new Encounter();
+            CurrentEncounter = new Encounter(logger);
         }
 
         public void StartNewEncounter(Encounter encounter)
         {
+            logger.Log("Encounter started!");
             CurrentEncounter = encounter;
             CurrentEncounter.StartCoroutines(actor.scene, party);
         }
@@ -29,13 +32,21 @@ namespace LD50.Gameplay
             while (true)
             {
                 var encounter = new Encounter(
+                    logger,
                     new Monster(100, 10, 2f),
                     new Monster(100, 3, 0.1f));
                 StartNewEncounter(encounter);
                 yield return new WaitUntil(CurrentEncounter.IsFightOver);
-                EncounterEnded?.Invoke();
+                FinishEncounter();
                 yield return new WaitSeconds(5);
             }
+        }
+
+        private void FinishEncounter()
+        {
+            logger.Log("Encounter ended!");
+            CurrentEncounter = new Encounter(logger);
+            EncounterEnded?.Invoke();
         }
     }
 }

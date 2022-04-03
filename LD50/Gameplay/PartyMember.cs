@@ -21,10 +21,12 @@ namespace LD50.Gameplay
         {
             Status = new PartyMemberStatus(baseStats, new Buffs(), 0, baseStats.MaxMana);
             Role = role;
+            Name = GetHashCode().ToString();
         }
 
         public float HealthPercent => (float)Status.Health / Status.BaseStats.MaxHealth;
         public float ManaPercent => (float)Status.Mana / Status.BaseStats.MaxMana;
+        public string Name { get; }
 
         public void Update(float dt)
         {
@@ -83,7 +85,7 @@ namespace LD50.Gameplay
             while (!encounter.IsFightOver() && !Status.IsDead)
             {
                 var monster = encounter.GetRandomLivingMonster();
-                monster.TakeDamage(Status.BaseStats.DamageOutput);
+                monster.TakeDamage(Status.BaseStats.DamageOutput, encounter);
                 yield return new WaitSeconds(1f); // todo: maybe each party member should have a different attack speed
             }
         }
