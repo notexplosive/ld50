@@ -45,11 +45,11 @@ namespace LD50
 
             var spells = new ISpell[]
             {
-                new SingleTargetSpell("Fast Heal", 1.5f, 30, 20, EmptyBuff.Create(), 0f),
-                new SingleTargetSpell("Slow Heal", 6f, 50, 50, EmptyBuff.Create(), 0f),
-                new SingleTargetSpell("Shield", 0.5f, 40, 0, ShieldBuff.Create(5f, 100), 10f),
-                new SingleTargetSpell("Heal Over Time", 0.5f, 40, 0, HealOverTimeBuff.Create(6f, 35), 8f),
-                new WholePartySpell("AoE Heal", 0f, 50, 25, EmptyBuff.Create(), 40f)
+                new SingleTargetSpell("Lesser Heal", 1.5f, 30, 20, EmptyBuff.Create(), 0f, 0),
+                new SingleTargetSpell("Greater Heal", 6f, 50, 50, EmptyBuff.Create(), 0f, 1),
+                new SingleTargetSpell("Healing Salve", 0.5f, 40, 0, HealOverTimeBuff.Create(6f, 35), 8f, 2),
+                new SingleTargetSpell("Power Word: Shield", 0.5f, 40, 0, ShieldBuff.Create(5f, 100), 10f, 3),
+                new WholePartySpell("Divine Explosion", 0f, 50, 25, EmptyBuff.Create(), 40f, 4)
                 // new SingleTargetSpell("Clear Debuff"),
                 // new SingleTargetSpell("Revive")
             };
@@ -176,6 +176,7 @@ namespace LD50
                     runtime.Painter);
             });
 
+            loader.AddMachinaAssetCallback("spells", () => new GridBasedSpriteSheet("spells", new Point(149)));
             loader.AddMachinaAssetCallback("roles", () => new GridBasedSpriteSheet("roles", new Point(76)));
             loader.AddMachinaAssetCallback("portraits", () => new GridBasedSpriteSheet("party", new Point(152)));
         }

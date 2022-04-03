@@ -25,8 +25,10 @@ namespace LD50.Renderer
 
         public override void Draw(SpriteBatch spriteBatch)
         {
-            spriteBatch.DrawRectangle(this.boundingRectangle.Rect, Color.White, 1f, transform.Depth);
 
+            var ninepatch = MachinaClient.Assets.GetMachinaAsset<NinepatchSheet>("ui-patch");
+            ninepatch.DrawFullNinepatch(spriteBatch, this.boundingRectangle.Rect, NinepatchSheet.GenerationDirection.Inner, transform.Depth);
+            
             if (this.spellCaster.InProgressSpell.Spell == this.spell)
             {
                 spriteBatch.DrawRectangle(this.boundingRectangle.Rect, Color.Yellow, 10f, transform.Depth - 10);
@@ -36,6 +38,9 @@ namespace LD50.Renderer
             {
                 spriteBatch.DrawRectangle(this.boundingRectangle.Rect, Color.LightGreen, 5f, transform.Depth - 15);
             }
+            
+            var spellsSheet = MachinaClient.Assets.GetMachinaAsset<SpriteSheet>("spells");
+            spellsSheet.DrawFrame(spriteBatch, this.spell.FrameIndex, this.boundingRectangle.Rect.Center.ToVector2(), 1f, 0f, XYBool.False, transform.Depth - 10, Color.White, true);
 
             Cooldown renderedCooldown;
 
@@ -53,7 +58,7 @@ namespace LD50.Renderer
                 var cooldownRect = this.boundingRectangle.Rect;
                 cooldownRect = new Rectangle(cooldownRect.Location,
                     new Point(cooldownRect.Size.X, (int) (cooldownRect.Size.Y * renderedCooldown.Percent())));
-                spriteBatch.FillRectangle(cooldownRect, Color.LightBlue.WithMultipliedOpacity(0.25f), transform.Depth - 20);
+                spriteBatch.FillRectangle(cooldownRect, Color.DarkBlue.WithMultipliedOpacity(0.5f), transform.Depth - 20);
             }
         }
     }
