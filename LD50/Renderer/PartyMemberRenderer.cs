@@ -1,8 +1,8 @@
-﻿using LD50.Data;
-using LD50.Gameplay;
+﻿using LD50.Gameplay;
 using Machina.Components;
 using Machina.Data;
 using Machina.Data.Layout;
+using Machina.Data.TextRendering;
 using Machina.Engine;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -24,15 +24,16 @@ namespace LD50.Renderer
             this.partyMember = partyMember;
 
             var rawLayout = LayoutNode.HorizontalParent("root", LayoutSize.Pixels(this.boundingRect.Size),
-                new LayoutStyle(alignment: Alignment.Center),
-                LayoutNode.OneOffParent("portrait-container", LayoutSize.StretchedVertically(80),
-                    new LayoutStyle(alignment: Alignment.Center),
-                    LayoutNode.Leaf("portrait", LayoutSize.FixedAspectRatio(1, 1))),
-                LayoutNode.VerticalParent("bars", LayoutSize.FixedAspectRatio(2, 1), LayoutStyle.Empty,
+                new LayoutStyle(),
+                LayoutNode.Leaf("portrait", LayoutSize.Pixels(new Point(this.boundingRect.Size.Y))),
+                LayoutNode.VerticalParent("bars", LayoutSize.StretchedBoth(), new LayoutStyle(padding: 4),
+                    LayoutNode.Leaf("name", LayoutSize.StretchedHorizontally(44)),
                     LayoutNode.Leaf("health", LayoutSize.StretchedBoth()),
                     LayoutNode.Leaf("mana", LayoutSize.StretchedBoth()),
                     LayoutNode.Leaf("buffs", LayoutSize.StretchedBoth())
-                    )
+                ),
+                LayoutNode.Leaf("role",
+                    LayoutSize.Pixels(new Point(this.boundingRect.Size.Y / 2, this.boundingRect.Size.Y)))
             );
 
             this.layout = rawLayout.Bake();
@@ -45,6 +46,8 @@ namespace LD50.Renderer
             var health = this.layout.GetNode("health", this.boundingRect.Location);
             var mana = this.layout.GetNode("mana", this.boundingRect.Location);
             var buffsRegion = this.layout.GetNode("buffs", this.boundingRect.Location);
+            var nameRegion = this.layout.GetNode("name", this.boundingRect.Location);
+            var roleRegion = this.layout.GetNode("role", this.boundingRect.Location);
 
             var outlineColor = Color.White;
 
@@ -55,8 +58,18 @@ namespace LD50.Renderer
 
             if (this.spellCaster.InProgressSpell.TargetPartyMember == this.partyMember)
             {
-                spriteBatch.DrawRectangle(root.Rectangle, Color.Yellow, 5f, transform.Depth - 20);                
+                spriteBatch.DrawRectangle(root.Rectangle, Color.Yellow, 5f, transform.Depth - 20);
             }
+
+            var nameText = new BoundedText(nameRegion.Size, Alignment.Center, Overflow.Ignore,
+                new FormattedText(
+                    new FormattedTextFragment("Party Member Name", Ld50Cartridge.FontMetrics, Color.White)));
+
+            foreach (var item in nameText.GetRenderedText())
+            {
+                item.Draw(spriteBatch, nameRegion.PositionRelativeToRoot, 0f, transform.Depth);
+            }
+            
             
             spriteBatch.DrawRectangle(root.Rectangle, outlineColor, 1f, transform.Depth);
             spriteBatch.DrawRectangle(portrait.Rectangle, outlineColor, 1f, transform.Depth);
@@ -72,11 +85,12 @@ namespace LD50.Renderer
             spriteBatch.FillRectangle(manaFill, Color.Blue, transform.Depth - 5);
             spriteBatch.DrawRectangle(mana.Rectangle, outlineColor, 1f, transform.Depth - 10);
 
-            int buffIndex = 0;
+            var buffIndex = 0;
             var buffSize = new Point(buffsRegion.Rectangle.Height);
             foreach (var buff in this.partyMember.Status.Buffs.AllNonEmptyBuffs())
             {
-                var buffRectangle = new Rectangle(buffsRegion.PositionRelativeToRoot + new Point(buffSize.X * buffIndex,0), buffSize);
+                var buffRectangle =
+                    new Rectangle(buffsRegion.PositionRelativeToRoot + new Point(buffSize.X * buffIndex, 0), buffSize);
                 spriteBatch.DrawRectangle(buffRectangle, Color.Green, 2f, transform.Depth - 5);
                 buffIndex++;
             }

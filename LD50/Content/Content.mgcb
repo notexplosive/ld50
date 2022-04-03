@@ -13,3 +13,14 @@
 
 #---------------------------------- Content ---------------------------------#
 
+#begin fonts/Lalezar-Regular.ttf
+/copy:fonts/Lalezar-Regular.ttf
+
+#begin fonts/OFL.txt
+/copy:fonts/OFL.txt
+
+#begin fonts/UIFont.spritefont
+/importer:
+/processor:
+/build:fonts/UIFont.spritefont
+

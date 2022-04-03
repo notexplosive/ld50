@@ -4,10 +4,12 @@ using LD50.Gameplay;
 using LD50.Renderer;
 using Machina.Data;
 using Machina.Data.Layout;
+using Machina.Data.TextRendering;
 using Machina.Engine;
 using Machina.Engine.Assets;
 using Machina.Engine.Cartridges;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace LD50
 {
@@ -17,9 +19,14 @@ namespace LD50
         {
         }
 
+        public static SpriteFontMetrics FontMetrics { private set; get; } 
+
         public override void OnGameLoad(GameSpecification specification, MachinaRuntime runtime)
         {
             SceneLayers.BackgroundColor = Color.Black;
+            SceneLayers.SamplerState = SamplerState.LinearWrap;
+            Ld50Cartridge.FontMetrics = MachinaClient.Assets.GetSpriteFont("UIFont");
+            
             var game = SceneLayers.AddNewScene();
 
             var partyMemberLayoutNames = new[]
