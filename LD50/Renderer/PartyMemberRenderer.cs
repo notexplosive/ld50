@@ -177,6 +177,15 @@ namespace LD50.Renderer
                 new Point((int) (mana.Rectangle.Width * this.partyMember.ManaPercent), mana.Rectangle.Height));
             spriteBatch.FillRectangle(manaFill, new Color(40, 92, 196), transform.Depth - 5);
             spriteBatch.DrawRectangle(mana.Rectangle, Color.Black, 2f, transform.Depth - 10);
+            var manaBoundedText = new BoundedText(health.Rectangle.Size, Alignment.Center, Overflow.Ignore,
+                FormattedText.FromString(
+                    $"{this.partyMember.Status.Mana} / {this.partyMember.Status.BaseStats.MaxMana}",
+                    MachinaClient.Assets.GetSpriteFont("UIFont"), Color.White));
+            foreach (var item in manaBoundedText.GetRenderedText())
+            {
+                item.Draw(spriteBatch, mana.PositionRelativeToRoot, 0f, transform.Depth - 20);
+            }
+            
 
             var spellImage = MachinaClient.Assets.GetMachinaAsset<SpriteSheet>("spells");
             
