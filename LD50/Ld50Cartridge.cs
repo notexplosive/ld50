@@ -101,7 +101,7 @@ namespace LD50
                 new SingleTargetSpell("Lesser Heal", 1.5f, 60, 30, EmptyBuff.Create(), 0f, 1, 0),
                 new SingleTargetSpell("Greater Heal", 6f, 70, 50, EmptyBuff.Create(), 0f, 2, 1),
                 new SingleTargetSpell("Healing Wind", 0.5f, 80, 0, HealOverTimeBuff.Create(6f, 35), 8f, 3, 2),
-                new SingleTargetSpell("Power Word: Shield", 0.5f, 70, 0, ShieldBuff.Create(5f, 50), 10f, 4, 3),
+                new SingleTargetSpell("Power Word: Shield", 0.5f, 70, 0, ShieldBuff.Create(5f, 200), 15f, 4, 3),
                 new WholePartySpell("Divine Explosion", 0f, 50, 25, EmptyBuff.Create(), 40f, 5, 4)
                 // new SingleTargetSpell("Clear Debuff"),
                 // new SingleTargetSpell("Revive")
