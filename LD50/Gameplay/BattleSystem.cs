@@ -32,11 +32,15 @@ namespace LD50.Gameplay
             var maker = new MonsterMaker(randomSeed);
             while (true)
             {
+                this.party.EnterCombat();
                 var encounter = maker.CreateEncounter(level, this.logger);
                 StartNewEncounter(encounter);
                 yield return new WaitUntil(CurrentEncounter.IsFightOver);
                 FinishEncounter();
                 level++;
+                this.party.LeaveCombat();
+                yield return new WaitSeconds(0.5f);
+                yield return new WaitUntil(this.party.IsFullyRegenerated);
                 yield return new WaitSeconds(5);
             }
         }

@@ -109,5 +109,10 @@ namespace LD50.Gameplay
                 PendingHeals += Status.BaseStats.MaxHealth / 10;
             }
         }
+
+        public void RegenerateMana(int amount)
+        {
+            Status = Status.GetNext(0, 0, 0, -amount);
+        }
     }
 }

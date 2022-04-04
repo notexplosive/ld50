@@ -73,6 +73,7 @@ namespace LD50.Gameplay
         }
 
         public static NoiseBasedRNG random = new NoiseBasedRNG(123456);
+        public bool InCombat { get; private set; }
 
         public void ReviveAnyDeadPartyMembers()
         {
@@ -83,6 +84,29 @@ namespace LD50.Gameplay
                     partyMember.Revive();
                 }
             }
+        }
+
+        public bool IsFullyRegenerated()
+        {
+            foreach (var partyMember in this.partyMembers)
+            {
+                if (!partyMember.Status.IsFullyHealed || !partyMember.Status.IsFullMana)
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        public void LeaveCombat()
+        {
+            this.InCombat = false;
+        }
+
+        public void EnterCombat()
+        {
+            this.InCombat = true;
         }
     }
 }

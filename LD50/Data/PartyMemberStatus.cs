@@ -22,6 +22,8 @@ namespace LD50.Data
 
         public bool IsDead { get; }
         public Buffs Buffs { get; }
+        public bool IsFullMana => Mana == BaseStats.MaxMana;
+        public bool IsFullyHealed => this.damageTaken == 0;
 
         public int GetAbsorbedDamageThisFrame(float dt, int incomingDamage)
         {

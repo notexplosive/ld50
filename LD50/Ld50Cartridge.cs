@@ -135,10 +135,8 @@ namespace LD50
                 var partyMember = this.party.GetMember(partyMemberIndex);
                 partyMember.Died += CheckGameOverStatus;
                 var partyMemberRoot = layoutActors.GetActor(name);
-                PartyMemberInterface.CreateFromActor(partyMemberRoot, partyMember, spellCaster);
+                PartyMemberInterface.CreateFromActor(partyMemberRoot, partyMember, spellCaster, this.party);
                 partyMemberIndex++;
-
-                this.chat.PartyMemberSay(partyMember, "Welcome!");
             }
 
             
