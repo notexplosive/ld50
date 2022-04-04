@@ -35,6 +35,17 @@ namespace LD50.Gameplay
                 }
             }
         }
+        
+        public IEnumerable<PartyMember> AllLivingDamageMembers()
+        {
+            foreach (var member in this.partyMembers)
+            {
+                if (!member.Status.IsDead && member.Role == PartyRole.Damage)
+                {
+                    yield return member;
+                }
+            }
+        }
 
         /// <summary>
         /// Gets the tank if available, if not, picks a random Damage Dealer

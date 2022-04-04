@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Machina.Data;
 using Machina.Engine;
 
@@ -53,7 +54,16 @@ namespace LD50.Gameplay
                 }
                 else
                 {
-                    target.TakeDamage(DamagePerHit);
+                    var possibleSecondaryTargets = party.AllLivingDamageMembers().ToArray();
+                    if (possibleSecondaryTargets.Length > 0 && Monster.random.NextFloat() < 0.05f)
+                    {
+                        possibleSecondaryTargets[Monster.random.Next(possibleSecondaryTargets.Length)].TakeDamage(DamagePerHit);
+                    }
+                    else
+                    {
+                        target.TakeDamage(DamagePerHit);
+                    }
+
                     yield return new WaitSeconds(AttackDelay);
                 }
             }

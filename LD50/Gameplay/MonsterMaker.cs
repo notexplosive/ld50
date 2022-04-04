@@ -73,7 +73,7 @@ namespace LD50.Gameplay
             {
                 var monsterDamage = GetMonsterDamagePerHit(level, numberOfMonsters);
                 monsters.Add(new Monster(GetMonsterHealth(level, numberOfMonsters), monsterDamage,
-                    TuningKnobs.GetMonsterAttackDelay(level, numberOfMonsters), monsterName));
+                    TuningKnobs.GetMonsterAttackDelay(level), monsterName));
             }
 
             logger.Log($"(Level {level})");

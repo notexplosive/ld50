@@ -12,7 +12,7 @@ namespace LD50.Gameplay
         
         public static float GetIdealDelayAtLevel(int level)
         {
-            return Math.Max(2f - level / 10f, 0.25f);
+            return Math.Max(3f - level / 10f, 0.25f);
         }
         
         public static Difficulty GetDifficultyForLevel(int level)
@@ -35,9 +35,9 @@ namespace LD50.Gameplay
             return 10 + level * 2;
         }
         
-        public static float GetMonsterAttackDelay(int level, int numberOfMonsters)
+        public static float GetMonsterAttackDelay(int level)
         {
-            return TuningKnobs.GetIdealDelayAtLevel(level) * numberOfMonsters;
+            return TuningKnobs.GetIdealDelayAtLevel(level);
         }
     }
 }
