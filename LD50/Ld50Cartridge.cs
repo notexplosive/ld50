@@ -67,7 +67,11 @@ namespace LD50
             
             var queueText = new BoundedTextRenderer(actors.GetActor("status"), "", uiFont, Color.White, Alignment.Center);
             MenuButtonBuilder.BuildQueueButton(actors.GetActor("damage-button"), PartyRole.Damage, () => queueText.Text = "Estimated Queue Time: 1.3 year(s)");
-            MenuButtonBuilder.BuildQueueButton(actors.GetActor("healer-button"), PartyRole.Healer, () => LoadGameScene(game));
+            MenuButtonBuilder.BuildQueueButton(actors.GetActor("healer-button"), PartyRole.Healer, () =>
+            {
+                queueText.Text = "Estimated Queue Time: 54 picosecond(s)";
+                LoadGameScene(game);
+            });
         }
 
         private void LoadGameScene(Scene game)
@@ -173,7 +177,14 @@ namespace LD50
             foreach (var name in partyMemberLayoutNames)
             {
                 var partyMember = this.party.GetMember(partyMemberIndex);
-                partyMember.Died += CheckGameOverStatus;
+                partyMember.Died += (member) =>
+                {
+                    this.chat.AppendColoredString($"{member.Name} has died", Color.Gray);
+                    if (CheckGameOverStatus())
+                    {
+                        game.StartCoroutine(GoBackToMainMenuAfterDelay(game));
+                    }
+                };
                 var partyMemberRoot = layoutActors.GetActor(name);
                 PartyMemberInterface.CreateFromActor(partyMemberRoot, partyMember, spellCaster, this.party);
                 partyMemberIndex++;
@@ -194,14 +205,22 @@ namespace LD50
             game.StartCoroutine(battleSystem.PrimaryLoopCoroutine((uint) Random.Seed));
         }
 
-        private void CheckGameOverStatus(PartyMember member)
+        private IEnumerator<ICoroutineAction> GoBackToMainMenuAfterDelay(Scene game)
         {
-            this.chat.AppendColoredString($"{member.Name} has died", Color.Gray);
+            yield return new WaitSeconds(5);
+            LoadMenuScene(game);
+        }
+
+        private bool CheckGameOverStatus()
+        {
             var livingMembers = this.party.AllLivingMembers().ToArray();
             if (!livingMembers.Any())
             {
                 this.chat.AppendColoredString("The party has wiped. Game Over.", Color.Yellow);
+                return true;
             }
+
+            return false;
         }
 
         public override void PrepareDynamicAssets(AssetLoader loader, MachinaRuntime runtime)
