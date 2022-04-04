@@ -25,6 +25,17 @@ namespace LD50.Renderer
 
         public override void Draw(SpriteBatch spriteBatch)
         {
+            var topCenter = new Vector2(this.boundingRectangle.Rect.Center.X, this.boundingRectangle.Rect.Top);
+            var radius = 24;
+            var circle = new CircleF(topCenter, radius);
+            
+            spriteBatch.DrawCircle(circle, 25, Color.White, radius, transform.Depth - 200);
+            spriteBatch.DrawCircle(circle, 25, Color.Black, 2f, transform.Depth - 201);
+
+            var font = MachinaClient.Assets.GetSpriteFont("TitleFont");
+            var origin = font.MeasureString(this.spell.Keybind.ToString()) / 2;
+            spriteBatch.DrawString(font, this.spell.Keybind.ToString(), topCenter.ToPoint().ToVector2(), Color.Black, 0f, origin.ToPoint().ToVector2(), 1f, SpriteEffects.None, transform.Depth - 201);
+            
             var ninepatch = MachinaClient.Assets.GetMachinaAsset<NinepatchSheet>("ui-patch");
             ninepatch.DrawFullNinepatch(spriteBatch, this.boundingRectangle.Rect, NinepatchSheet.GenerationDirection.Inner, transform.Depth);
             

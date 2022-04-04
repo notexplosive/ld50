@@ -12,6 +12,7 @@ namespace LD50.Data
     public interface ISpell
     {
         public int FrameIndex { get; }
+        public int Keybind { get; }
         public string Name { get; }
         public float CastDuration { get; }
         public int ManaCost { get; }
