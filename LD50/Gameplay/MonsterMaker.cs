@@ -113,7 +113,7 @@ namespace LD50.Gameplay
 
         private string GetBossName()
         {
-            var consonants = new[] { 'x', 'c', 'd', 'k', 'n', 'b', 'v', 'r', 'p' };
+            var consonants = new[] { 'x', 'c', 'd', 'k', 'n', 'b', 'v', 'r', 'p', 'g' };
             var vowels = new[] {'a', 'e', 'o', 'u', '\''};
 
             this.random.Next(consonants.Length);
