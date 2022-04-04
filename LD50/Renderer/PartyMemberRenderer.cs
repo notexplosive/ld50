@@ -169,12 +169,23 @@ namespace LD50.Renderer
             spriteBatch.FillRectangle(manaFill, new Color(40, 92, 196), transform.Depth - 5);
             spriteBatch.DrawRectangle(mana.Rectangle, Color.Black, 2f, transform.Depth - 10);
 
+            var spellImage = MachinaClient.Assets.GetMachinaAsset<SpriteSheet>("spells");
+            
+            
             var buffIndex = 0;
             var buffSize = new Point(buffsRegion.Rectangle.Height);
             foreach (var buff in this.partyMember.Status.Buffs.AllNonEmptyBuffs())
             {
                 var buffRectangle =
                     new Rectangle(buffsRegion.PositionRelativeToRoot + new Point(buffSize.X * buffIndex, 0), buffSize);
+
+
+                var scale = (float) buffRectangle.Width / spellImage.GetSourceRectForFrame(0).Width;
+                
+                spellImage.DrawFrame(spriteBatch, (int) buff.FrameIndex,
+                    buffRectangle.Center.ToVector2(), scale, 0f, XYBool.False, transform.Depth - 10, Color.White);
+                
+                
                 spriteBatch.DrawRectangle(buffRectangle, Color.Green, 2f, transform.Depth - 5);
                 buffIndex++;
             }

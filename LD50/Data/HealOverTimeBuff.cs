@@ -3,6 +3,8 @@
     public readonly struct HealOverTimeBuff : IBuff
     {
         private readonly ValueOverTime valueOverTime;
+        
+        public int FrameIndex => 2;
 
         public HealOverTimeBuff(ValueOverTime valueOverTime = default)
         {

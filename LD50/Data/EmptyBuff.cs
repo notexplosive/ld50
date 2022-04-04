@@ -2,6 +2,7 @@
 {
     public readonly struct EmptyBuff : IBuff
     {
+        public int FrameIndex => -1;
 
         public static IBuff Create()
         {

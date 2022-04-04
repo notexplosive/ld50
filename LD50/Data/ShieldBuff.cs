@@ -7,6 +7,8 @@
             RemainingDuration = duration;
             DamageAbsorb = damageAbsorb;
         }
+        
+        public int FrameIndex => 3;
 
         public int DamageAbsorb { get; }
         

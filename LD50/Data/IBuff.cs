@@ -7,5 +7,6 @@ namespace LD50.Data
         public float RemainingDuration { get; }
         IBuff GetNext(float dt);
         int GetHealAmount(float dt);
+        int FrameIndex { get; }
     }
 }
