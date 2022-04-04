@@ -11,6 +11,7 @@ using Machina.Data.TextRendering;
 using Machina.Engine;
 using Machina.Engine.Assets;
 using Machina.Engine.Cartridges;
+using Machina.ThirdParty;
 using Microsoft.Xna.Framework;
 
 namespace LD50
@@ -78,10 +79,48 @@ namespace LD50
             MenuButtonBuilder.BuildQueueButton(actors.GetActor("healer-button"), PartyRole.Healer, () =>
             {
                 queueText.Text = "Estimated Queue Time: 54 picosecond(s)";
-                LoadGameScene(game, false);
+                TransitionToGameScene(game, false);
             });
             MenuButtonBuilder.BuildQueueButton(actors.GetActor("tutorial-button"), PartyRole.Tank,
-                () => { LoadGameScene(game, true); });
+                () => { TransitionToGameScene(game, true); });
+        }
+
+        private void TransitionToGameScene(Scene game, bool tutorial)
+        {
+            IEnumerator<ICoroutineAction> Coroutine()
+            {
+                var cameraTween = new TweenChain();
+                var cameraY = new TweenAccessors<float>(0);
+                cameraTween.AppendFloatTween(-900, 0.5f, EaseFuncs.CubicEaseIn, cameraY);
+
+                var ah1 = game.AddActor("adhoc");
+                new AdHoc(ah1).onUpdate += (dt) =>
+                {
+                    cameraTween.Update(dt);
+                    game.camera.UnscaledPosition = new Vector2(0, cameraY.CurrentValue);
+                };
+                yield return new WaitUntil(cameraTween.IsDone);
+                ah1.Destroy();
+                
+                LoadGameScene(game, tutorial);
+                
+                cameraTween.Refresh();
+
+                cameraTween.AppendCallback(() => cameraY.setter(900));
+                cameraTween.AppendFloatTween(0, 0.5f, EaseFuncs.CubicEaseOut, cameraY);
+
+                var ah2 = game.AddActor("adhoc2");
+                new AdHoc(ah2).onUpdate += (dt) =>
+                {
+                    cameraTween.Update(dt);
+                    game.camera.UnscaledPosition = new Vector2(0, cameraY.CurrentValue);
+                };
+                
+                yield return new WaitUntil(cameraTween.IsDone);
+                ah2.Destroy();
+            }
+            
+            game.StartCoroutine(Coroutine());
         }
 
         private void LoadGameScene(Scene game, bool tutorial)
