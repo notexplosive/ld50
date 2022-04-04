@@ -97,5 +97,162 @@ namespace LD50.Gameplay
             yield return new WaitSeconds(5f);
             Say("Whelp. That's about it. Good luck out there!");
         }
+
+        public static IEnumerator<ICoroutineAction> GetCinematicForLevel(Chat chat, Party party, int level)
+        {
+            if (!SeenCinematicForLevel.ContainsKey(level))
+            {
+
+                void TankSay(string message)
+                {
+                    chat.PartyMemberSay(party.GetMember(0), message);
+                }
+
+                void MageSay(string message)
+                {
+                    chat.PartyMemberSay(party.GetMember(1), message);
+                }
+
+                void RogueSay(string message)
+                {
+                    chat.PartyMemberSay(party.GetMember(2), message);
+                }
+
+                void DruidSay(string message)
+                {
+                    chat.PartyMemberSay(party.GetMember(3), message);
+                }
+
+                WaitSeconds ShortDelay()
+                {
+                    return new WaitSeconds(3);
+                }
+
+                WaitSeconds NormalDelay()
+                {
+                    return new WaitSeconds(5);
+                }
+
+                WaitSeconds LongDelay()
+                {
+                    return new WaitSeconds(6);
+                }
+
+                if (level == 0)
+                {
+                    RogueSay("ugh,, finally found a group, i've been waiting the queue for ages");
+                    yield return NormalDelay();
+                    TankSay("Are the queue times that bad?");
+                    yield return ShortDelay();
+                    TankSay("How long were you waiting?");
+                    yield return NormalDelay();
+                    RogueSay("since JANUARY!!!");
+                    yield return NormalDelay();
+                    DruidSay("It's harder for damage dealers to find groups.");
+                    yield return NormalDelay();
+                    DruidSay("You could just switch to healer you know");
+                    yield return NormalDelay();
+                    RogueSay("heck no?? healing sux");
+                    yield return NormalDelay();
+                    RogueSay("no offense healer");
+                    yield return LongDelay();
+                    TankSay("I'm... gonna go ahead and pull.");
+                }
+
+                if (level == 1)
+                {
+                    DruidSay("brb! doorbell");
+                    yield return ShortDelay();
+                    TankSay("No prob, we'll wait.");
+                    yield return NormalDelay();
+                    RogueSay("srsly? we could just go without her");
+                    yield return NormalDelay();
+                    TankSay("Without her damage output, the fight might go on too long.");
+                    yield return NormalDelay();
+                    TankSay("Then the healer will run out of mana and I'll die");
+                    yield return NormalDelay();
+                    TankSay("And then we'll all die.");
+                    yield return NormalDelay();
+                    RogueSay("ya but");
+                    yield return ShortDelay();
+                    RogueSay("its not like she was doing THAT much damage");
+                    yield return NormalDelay();
+                    MageSay("... she did more damage than you that fight.");
+                    yield return ShortDelay();
+                    DruidSay("Back!");
+                }
+
+                if (level == 2)
+                {
+                    RogueSay("hang on");
+                    yield return ShortDelay();
+                    RogueSay("gotta take out the trash");
+                    yield return LongDelay();
+                    MageSay($"Hey {party.GetMember(3).Name}");
+                    yield return ShortDelay();
+                    DruidSay("Hey what?");
+                    yield return ShortDelay();
+                    MageSay("How come you're queued as Damage Dealer?");
+                    yield return NormalDelay();
+                    DruidSay("What do you mean?");
+                    yield return NormalDelay();
+                    MageSay("Your class can be any role");
+                    yield return ShortDelay();
+                    MageSay("Why choose the long queue times?");
+                    yield return NormalDelay();
+                    DruidSay("Eh, being healer is stressful");
+                    yield return NormalDelay();
+                    DruidSay("I get enough of that in my day job");
+                    yield return ShortDelay();
+                    MageSay("What do you do?");
+                    yield return NormalDelay();
+                    DruidSay("I'm a surgeon");
+                    yield return ShortDelay();
+                    RogueSay("back");
+                }
+
+                if (level == 4)
+                {
+                    TankSay("Good work team!");
+                    yield return NormalDelay();
+                    TankSay("It only gets tougher from here!");
+                    yield return NormalDelay();
+                }
+
+                if (TuningKnobs.GetDifficultyForLevel(level) == Difficulty.Boss)
+                {
+                    if (TuningKnobs.GetDifficultyForLevel(level - 1) != Difficulty.Boss)
+                    {
+                        TankSay("OK. The next room is the boss. Focus up!");
+                        yield return NormalDelay();
+                    }
+                    else
+                    {
+                        TankSay("WE DID IT!");
+                        yield return NormalDelay();
+                        MageSay("Sorry to break character but...");
+                        yield return NormalDelay();
+                        MageSay("Thanks for playing! That's the game!");
+                        yield return NormalDelay();
+                        MageSay("This was made for Ludum Dare 50.");
+                        yield return NormalDelay();
+                        MageSay("With the theme: Delay the Inevitable");
+                        yield return NormalDelay();
+                        MageSay("It is now safe to turn off the game.");
+                        yield return NormalDelay();
+                        TankSay("Or we can fight another boss ;)");
+                        yield return NormalDelay();
+                        RogueSay("or you can play the creator's other games at notexplosive.net ;^)");
+                        yield return LongDelay();
+                        TankSay("Well... I'm gonna pull the next one");
+                    }
+
+                }
+            }
+
+            SeenCinematicForLevel[level] = true;
+        }
+
+        public static readonly Dictionary<int, bool> SeenCinematicForLevel = new Dictionary<int, bool>();
     }
 }

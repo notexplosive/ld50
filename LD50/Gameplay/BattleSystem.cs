@@ -36,14 +36,17 @@ namespace LD50.Gameplay
             yield return game.StartCoroutine(cartridge.GoBackToMainMenuAfterDelay(game));
         }
 
-        public IEnumerator<ICoroutineAction> PrimaryLoopCoroutine(uint randomSeed)
+        public IEnumerator<ICoroutineAction> PrimaryLoopCoroutine(uint randomSeed, Scene scene)
         {
             var level = 0;
             var maker = new MonsterMaker(randomSeed);
+
+            yield return scene.StartCoroutine(Cinematic.GetCinematicForLevel(this.chat, this.party, 0));
+
             while (true)
             {
                 var encounter = maker.CreateEncounter(level, this.logger);
-                yield return new WaitSeconds(5);
+                yield return new WaitSeconds(1);
                 Battlecry();
                 yield return new WaitSeconds(1);
                 this.party.EnterCombat();
@@ -55,6 +58,8 @@ namespace LD50.Gameplay
                 level++;
                 this.party.LeaveCombat();
                 yield return new WaitSeconds(0.5f);
+                yield return scene.StartCoroutine(Cinematic.GetCinematicForLevel(this.chat, this.party, level));
+
                 yield return new WaitUntil(this.party.IsFullyRegenerated);
             }
         }

@@ -53,6 +53,8 @@ namespace LD50.Gameplay
                 if (target == null)
                 {
                     encounter.Logger.LogNormal($"{Name} dances over the party's dead bodies");
+                    encounter.Logger.LogNormal($"You made it to level {encounter.Level}");
+                    encounter.Logger.LogNormal($"Press Space to return to the main menu");
                     yield return new WaitUntil(() => false);
                 }
                 else

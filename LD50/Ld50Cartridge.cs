@@ -13,6 +13,7 @@ using Machina.Engine.Assets;
 using Machina.Engine.Cartridges;
 using Machina.ThirdParty;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Input;
 
 namespace LD50
 {
@@ -217,7 +218,7 @@ namespace LD50
                         PartyPortrait.Mage, new SoundEffects("belch", "fireball", "startled_cow")),
                     new PartyMember(new BaseStats(50, 20, 30, 5, 0.55f), "Rodney", PartyRole.Damage,
                         PartyPortrait.Rogue, new SoundEffects("toa", "toa", "startled_cow")),
-                    new PartyMember(new BaseStats(80, 50, 30, 10, 1.1f), "Helen", PartyRole.Damage,
+                    new PartyMember(new BaseStats(60, 50, 30, 10, 1.1f), "Helen", PartyRole.Damage,
                         PartyPortrait.Druid, new SoundEffects("uhp", "magic_missile", "startled_cow")),
                     player
                 );
@@ -254,7 +255,13 @@ namespace LD50
                     this.chat.AppendColoredString($"{member.Name} has died", Color.Gray);
                     if (CheckGameOverStatus())
                     {
-                        game.StartCoroutine(GoBackToMainMenuAfterDelay(game));
+                        var adHoc = new AdHoc(game.AddActor("Quitter"));
+                        adHoc.onKey += (key, state, modifiers) => {
+                            if (modifiers.None && key == Keys.Space && state == ButtonState.Pressed)
+                            {
+                                LoadMenuScene(game);
+                            } 
+                        };
                     }
                 };
                 var partyMemberRoot = layoutActors.GetActor(name);
@@ -280,7 +287,7 @@ namespace LD50
             }
             else
             {
-                game.StartCoroutine(battleSystem.PrimaryLoopCoroutine((uint) this.random.Next()));
+                game.StartCoroutine(battleSystem.PrimaryLoopCoroutine((uint) this.random.Next(), game));
             }
         }
 

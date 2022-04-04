@@ -20,7 +20,7 @@ namespace LD50.Gameplay
         
         public static float GetIdealDelayAtLevel(int level)
         {
-            var ideal = 3f - (level + 3) / 5f;
+            var ideal = 2f - (level + 2) / 10f;
             return Math.Max(ideal, 0.25f);
         }
         
@@ -46,7 +46,7 @@ namespace LD50.Gameplay
         
         public static int GetIdealDamageAtLevel(int level)
         {
-            return 24 + level / 2;
+            return 22 + level / 3;
         }
         
         public static float GetMonsterAttackDelay(int level)
