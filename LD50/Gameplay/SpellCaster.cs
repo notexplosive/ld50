@@ -10,15 +10,17 @@ namespace LD50.Gameplay
 {
     public class SpellCaster : BaseComponent
     {
-        private readonly List<PartyMemberTuple> partyTuples;
+        public static readonly float BufferWindow = 0.5f;
         private readonly TweenChain castingTween;
-        private readonly TweenAccessors<float> percentTweenable;
-        private readonly ISpell[] spells;
+        private readonly SpellLogger logger;
         private readonly Party party;
+        private readonly List<PartyMemberTuple> partyTuples;
+        private readonly TweenAccessors<float> percentTweenable;
         private readonly PartyMember player;
-        public Cooldown GlobalCooldown { get; }
+        private readonly ISpell[] spells;
 
-        public SpellCaster(Actor actor, Party party, ISpell[] spells, PartyMember player, Cooldown globalCooldown, SpellLogger logger = null) : base(actor)
+        public SpellCaster(Actor actor, Party party, ISpell[] spells, PartyMember player, Cooldown globalCooldown,
+            SpellLogger logger = null) : base(actor)
         {
             this.logger = logger;
             this.player = player;
@@ -30,7 +32,13 @@ namespace LD50.Gameplay
             GlobalCooldown = globalCooldown;
         }
 
+        public Cooldown GlobalCooldown { get; }
+
         public float Percent => this.percentTweenable.CurrentValue;
+
+        public PendingSpell BufferedSpell { get; private set; }
+
+        public PendingSpell InProgressSpell { get; private set; }
 
         public override void Update(float dt)
         {
@@ -38,7 +46,7 @@ namespace LD50.Gameplay
             {
                 spell.Cooldown.Update(dt);
             }
-            
+
             GlobalCooldown.Update(dt);
 
             if (BufferedSpell.Spell != null)
@@ -59,41 +67,38 @@ namespace LD50.Gameplay
                     CancelInProgressSpell();
                     ClearBufferedSpell();
                 }
-                
+
                 if (key == Keys.D1)
                 {
                     TryToCastSpell(0);
                 }
-                
+
                 if (key == Keys.D2)
                 {
                     TryToCastSpell(1);
                 }
-                
+
                 if (key == Keys.D3)
                 {
                     TryToCastSpell(2);
                 }
-                
+
                 if (key == Keys.D4)
                 {
                     TryToCastSpell(3);
                 }
-                
+
                 if (key == Keys.D5)
                 {
                     TryToCastSpell(4);
                 }
-                
+
                 if (key == Keys.D6)
                 {
                     TryToCastSpell(5);
                 }
             }
         }
-
-        public static readonly float BufferWindow = 0.5f;
-        private readonly SpellLogger logger;
 
         public bool TryToCastSpell(PendingSpell pendingSpell, bool isFromBuffer = false)
         {
@@ -109,20 +114,21 @@ namespace LD50.Gameplay
 
                 return false;
             }
-            
+
             var spell = pendingSpell.Spell;
             var hoveredPartyMember = pendingSpell.TargetPartyMember;
-            
+
             if (hoveredPartyMember == null && spell is SingleTargetSpell)
             {
                 this.logger.Log("You need to be hovering a target.");
                 ClearBufferedSpell();
                 return false;
             }
-            
+
             if (!this.castingTween.IsDone())
             {
-                var timeLeft = InProgressSpell.Spell.CastDuration - this.percentTweenable.CurrentValue * InProgressSpell.Spell.CastDuration;
+                var timeLeft = InProgressSpell.Spell.CastDuration -
+                               this.percentTweenable.CurrentValue * InProgressSpell.Spell.CastDuration;
 
                 if (timeLeft < SpellCaster.BufferWindow)
                 {
@@ -144,11 +150,15 @@ namespace LD50.Gameplay
                 }
                 else
                 {
+                    if (isFromBuffer)
+                    {
+                        ClearBufferedSpell();
+                    }
+                    
                     this.logger.Log("Not ready yet.");
                 }
-                
-                return false;
 
+                return false;
             }
 
             if (!spell.Cooldown.IsReady())
@@ -159,6 +169,11 @@ namespace LD50.Gameplay
                 }
                 else
                 {
+                    if (isFromBuffer)
+                    {
+                        ClearBufferedSpell();
+                    }
+                    
                     this.logger.Log("Not ready yet.");
                 }
 
@@ -178,7 +193,7 @@ namespace LD50.Gameplay
 
             InProgressSpell = pendingSpell;
             GlobalCooldown.Start(); // gcd triggers when you START casting a spell
-            
+
             void FinishCast()
             {
                 InProgressSpell.Spell.Execute(InProgressSpell.TargetPartyMember, this.party);
@@ -186,7 +201,7 @@ namespace LD50.Gameplay
                 this.player.ConsumeMana(InProgressSpell.Spell.ManaCost);
                 CancelInProgressSpell();
             }
-            
+
             if (!InProgressSpell.Spell.IsInstant)
             {
                 this.castingTween.Clear();
@@ -202,7 +217,7 @@ namespace LD50.Gameplay
 
             return true;
         }
-        
+
         public bool TryToCastSpell(int i)
         {
             ClearBufferedSpell();
@@ -212,25 +227,27 @@ namespace LD50.Gameplay
             {
                 return false;
             }
-            
+
             var spell = this.spells[i];
             var pendingSpell = new PendingSpell(hoveredPartyMember, spell);
 
             var success = TryToCastSpell(pendingSpell);
 
             pendingSpell.Spell.OnAttempt();
-            
+
             return success;
         }
 
         private void BufferSpell(PendingSpell pendingSpell)
         {
-            BufferedSpell = pendingSpell;
+            var tryingToCastSameSpellTwice = pendingSpell.Spell == InProgressSpell.Spell;
+            var pendingSpellHasCooldown = !pendingSpell.Spell.Cooldown.IsInstant;
+
+            if (tryingToCastSameSpellTwice && !pendingSpellHasCooldown || !tryingToCastSameSpellTwice)
+            {
+                BufferedSpell = pendingSpell;
+            }
         }
-
-        public PendingSpell BufferedSpell { get; private set; }
-
-        public PendingSpell InProgressSpell { get; private set; }
 
         public void AddPartyMemberInterface(Actor partyMemberActor, Hoverable hoverable, PartyMember partyMember)
         {
@@ -262,7 +279,7 @@ namespace LD50.Gameplay
         {
             BufferedSpell = new PendingSpell();
         }
-        
+
         private void CancelInProgressSpell()
         {
             this.percentTweenable.setter(0f);
@@ -283,6 +300,11 @@ namespace LD50.Gameplay
             return null;
         }
 
+        public void UpdateTween(float dt)
+        {
+            this.castingTween.Update(dt);
+        }
+
         private readonly struct PartyMemberTuple
         {
             public readonly Actor partyMemberActor;
@@ -295,11 +317,6 @@ namespace LD50.Gameplay
                 this.hoverable = hoverable;
                 this.partyMember = partyMember;
             }
-        }
-
-        public void UpdateTween(float dt)
-        {
-            this.castingTween.Update(dt);
         }
     }
 }

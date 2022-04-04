@@ -7,12 +7,12 @@ namespace LD50.Gameplay
         public static int GetIdealHealthAtLevel(int level)
         {
             // essentially a function of how long the battle lasts
-            return 1000 + level * 100;
+            return 1000 + level * 50;
         }
         
         public static float GetIdealDelayAtLevel(int level)
         {
-            return Math.Max(3f - level / 10f, 0.25f);
+            return Math.Max(2f - level / 10f, 0.25f);
         }
         
         public static Difficulty GetDifficultyForLevel(int level)

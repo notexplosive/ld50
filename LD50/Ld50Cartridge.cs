@@ -45,10 +45,10 @@ namespace LD50
 
             var spells = new ISpell[]
             {
-                new SingleTargetSpell("Lesser Heal", 1.5f, 30, 20, EmptyBuff.Create(), 0f, 1, 0),
-                new SingleTargetSpell("Greater Heal", 6f, 50, 50, EmptyBuff.Create(), 0f, 2, 1),
-                new SingleTargetSpell("Healing Wind", 0.5f, 40, 0, HealOverTimeBuff.Create(6f, 35), 8f, 3, 2),
-                new SingleTargetSpell("Power Word: Shield", 0.5f, 40, 0, ShieldBuff.Create(5f, 100), 10f, 4, 3),
+                new SingleTargetSpell("Lesser Heal", 1.5f, 60, 30, EmptyBuff.Create(), 0f, 1, 0),
+                new SingleTargetSpell("Greater Heal", 6f, 70, 50, EmptyBuff.Create(), 0f, 2, 1),
+                new SingleTargetSpell("Healing Wind", 0.5f, 80, 0, HealOverTimeBuff.Create(6f, 35), 8f, 3, 2),
+                new SingleTargetSpell("Power Word: Shield", 0.5f, 60, 0, ShieldBuff.Create(5f, 50), 10f, 4, 3),
                 new WholePartySpell("Divine Explosion", 0f, 50, 25, EmptyBuff.Create(), 40f, 5, 4)
                 // new SingleTargetSpell("Clear Debuff"),
                 // new SingleTargetSpell("Revive")
@@ -98,13 +98,13 @@ namespace LD50
 
             var layoutActors = new LayoutActors(game, layout.Bake());
 
-            var player = new PartyMember(new BaseStats(100, 500, 5), "Player", PartyRole.Healer, PartyPortrait.Healer);
+            var player = new PartyMember(new BaseStats(30, 500, 10), "Player", PartyRole.Healer, PartyPortrait.Healer);
 
             this.party = new Party(
                 new PartyMember(new BaseStats(100, 100, 0, 5), "Terry", PartyRole.Tank),
-                new PartyMember(new BaseStats(100, 100, 0, 10), "Miriam", PartyRole.Damage, PartyPortrait.Mage),
-                new PartyMember(new BaseStats(100, 100, 0, 10), "Rodney", PartyRole.Damage,  PartyPortrait.Rogue),
-                new PartyMember(new BaseStats(100, 100, 0, 10), "Helen", PartyRole.Damage, PartyPortrait.Druid),
+                new PartyMember(new BaseStats(50, 100, 0, 10), "Miriam", PartyRole.Damage, PartyPortrait.Mage),
+                new PartyMember(new BaseStats(50, 100, 0, 10), "Rodney", PartyRole.Damage,  PartyPortrait.Rogue),
+                new PartyMember(new BaseStats(50, 100, 0, 10), "Helen", PartyRole.Damage, PartyPortrait.Druid),
                 player
             );
 

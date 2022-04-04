@@ -11,6 +11,8 @@
             this.current = 0;
         }
 
+        public bool IsInstant => this.total == 0;
+
         public void Update(float dt)
         {
             if (this.current > 0)
