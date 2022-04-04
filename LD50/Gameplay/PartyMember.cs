@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using LD50.Data;
 using Machina.Data;
 using Machina.Engine;
@@ -94,11 +95,13 @@ namespace LD50.Gameplay
 
         public IEnumerator<ICoroutineAction> AttackCoroutine(Encounter encounter)
         {
+            yield return new WaitSeconds(Status.BaseStats.AttackDelay);
+            
             while (!encounter.IsFightOver() && !Status.IsDead)
             {
-                var monster = encounter.GetRandomLivingMonster();
+                var monster = encounter.GetAllLivingMonsters().ToArray()[0];
                 monster.TakeDamage(Status.BaseStats.DamageOutput, encounter);
-                yield return new WaitSeconds(1f); // todo: maybe each party member should have a different attack speed
+                yield return new WaitSeconds(Status.BaseStats.AttackDelay);
             }
         }
 
