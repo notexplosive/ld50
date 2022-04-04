@@ -31,6 +31,7 @@ namespace LD50
         public override void OnGameLoad(GameSpecification specification, MachinaRuntime runtime)
         {
             this.random = new NoiseBasedRNG((uint) Random.Seed);
+            Monster.random = new NoiseBasedRNG((uint) Random.Seed);
             
             SceneLayers.BackgroundColor = new Color(20, 16, 19);
             Ld50Cartridge.FontMetrics = MachinaClient.Assets.GetSpriteFont("UIFont");
@@ -165,10 +166,10 @@ namespace LD50
             else
             {
                 this.party = new Party(
-                    new PartyMember(new BaseStats(100, 100, 0, 5, 1), "Terry", PartyRole.Tank, PartyPortrait.Tank),
-                    new PartyMember(new BaseStats(35, 100, 0, 10, 2), "Miriam", PartyRole.Damage, PartyPortrait.Mage),
-                    new PartyMember(new BaseStats(50, 100, 0, 5, 1), "Rodney", PartyRole.Damage, PartyPortrait.Rogue),
-                    new PartyMember(new BaseStats(80, 100, 0, 7, 0.5f), "Helen", PartyRole.Damage, PartyPortrait.Druid),
+                    new PartyMember(new BaseStats(100, 100, 10, 5, 1), "Terry", PartyRole.Tank, PartyPortrait.Tank),
+                    new PartyMember(new BaseStats(35, 40, 30, 20, 2.33f), "Miriam", PartyRole.Damage, PartyPortrait.Mage),
+                    new PartyMember(new BaseStats(50, 20, 30, 5, 0.55f), "Rodney", PartyRole.Damage, PartyPortrait.Rogue),
+                    new PartyMember(new BaseStats(80, 50, 30, 10, 1.1f), "Helen", PartyRole.Damage, PartyPortrait.Druid),
                     player
                 );
             }

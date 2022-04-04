@@ -11,7 +11,7 @@ namespace LD50.Gameplay
             this.chat = chat;
         }
 
-        public void Log(string message)
+        public void LogNormal(string message)
         {
             if (this.chat == null)
             {
@@ -20,10 +20,34 @@ namespace LD50.Gameplay
             
             this.chat.LogCombatEvent(message);
         }
+        
+        public void LogHappy(string message)
+        {
+            if (this.chat == null)
+            {
+                return;
+            }
+            
+            this.chat.AppendColoredString(message, Color.Yellow);
+        }
 
         public void LogVictory()
         {
+            if (this.chat == null)
+            {
+                return;
+            }
             this.chat.AppendColoredString("Victory!", Color.Yellow);
+        }
+
+        public void LogStatus(string message)
+        {
+            if (this.chat == null)
+            {
+                return;
+            }
+            
+            this.chat.AppendColoredString(message, Color.Cyan);
         }
     }
 }

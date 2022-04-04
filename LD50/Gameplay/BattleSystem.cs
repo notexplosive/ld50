@@ -25,7 +25,7 @@ namespace LD50.Gameplay
         public void StartNewEncounter(Encounter encounter)
         {
             CurrentEncounter = encounter;
-            CurrentEncounter.StartCoroutines(this.actor.scene, this.party);
+            CurrentEncounter.StartCoroutines(this.actor.scene, this.party, this.chat);
         }
 
         public IEnumerator<ICoroutineAction> TutorialCoroutine(Scene game, Ld50Cartridge cartridge)
@@ -34,23 +34,6 @@ namespace LD50.Gameplay
             
             this.party.EnterCombat();
             yield return game.StartCoroutine(Cinematic.TutorialIntro(this.chat, this.party, this));
-            
-            /*
-            while (true)
-            {
-                
-                var encounter = maker.CreateEncounter(level, this.logger);
-                StartNewEncounter(encounter);
-                yield return new WaitUntil(CurrentEncounter.IsFightOver);
-                FinishEncounter();
-                level++;
-                this.party.LeaveCombat();
-                yield return new WaitSeconds(0.5f);
-                yield return new WaitUntil(this.party.IsFullyRegenerated);
-                yield return new WaitSeconds(5);
-            }
-            */
-
             yield return game.StartCoroutine(cartridge.GoBackToMainMenuAfterDelay(game));
         }
         

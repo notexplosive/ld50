@@ -76,15 +76,15 @@ namespace LD50.Gameplay
                     TuningKnobs.GetMonsterAttackDelay(level), monsterName));
             }
 
-            logger.Log($"(Level {level})");
+            logger.LogStatus($"(Level {level})");
             
             if (numberOfMonsters > 1)
             {
-                logger.Log($"A {RandomPlurality()} of {numberOfMonsters} {monsterName}s attacks!");
+                logger.LogNormal($"A {RandomPlurality()} of {numberOfMonsters} {monsterName}s attacks!");
             }
             else
             {
-                logger.Log($"A {monsterName} attacks!");
+                logger.LogNormal($"A {monsterName} attacks!");
             }
 
             return new Encounter(logger, monsters.ToArray());

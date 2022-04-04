@@ -3,6 +3,7 @@ using System.Linq;
 using LD50.Data;
 using Machina.Data;
 using Machina.Engine;
+using Microsoft.Xna.Framework;
 
 namespace LD50.Gameplay
 {
@@ -84,14 +85,22 @@ namespace LD50.Gameplay
             PendingSpentMana += manaCost;
         }
 
-        public IEnumerator<ICoroutineAction> AttackCoroutine(Encounter encounter)
+        public IEnumerator<ICoroutineAction> AttackCoroutine(Encounter encounter, Chat chat)
         {
             yield return new WaitSeconds(Status.BaseStats.AttackDelay);
             
             while (!encounter.IsFightOver() && !Status.IsDead)
             {
                 var monster = encounter.GetAllLivingMonsters().ToArray()[0];
-                monster.TakeDamage(Status.BaseStats.DamageOutput, encounter);
+                var damage = Status.BaseStats.DamageOutput;
+                if (damage > 0)
+                {
+                    monster.TakeDamage(damage, encounter, this);
+                    
+                    // spend mana
+                    Status = Status.GetNext(0f, 0, 0, damage * 2);
+                }
+
                 yield return new WaitSeconds(Status.BaseStats.AttackDelay);
             }
         }

@@ -26,12 +26,12 @@ namespace LD50.Gameplay
             this.initialDelay = Monster.random.NextFloat() * attackDelay;
         }
 
-        public void TakeDamage(int damage, Encounter encounter)
+        public void TakeDamage(int damage, Encounter encounter, PartyMember attacker)
         {
             Health -= damage;
             if (IsDead)
             {
-                encounter.Logger.Log($"{Name} was defeated");
+                encounter.Logger.LogHappy($"{attacker.Name} killed the {Name}.");
             }
         }
 
@@ -49,13 +49,13 @@ namespace LD50.Gameplay
                 
                 if (target == null)
                 {
-                    encounter.Logger.Log($"{Name} dances over the party's dead bodies");
+                    encounter.Logger.LogNormal($"{Name} dances over the party's dead bodies");
                     yield return new WaitUntil(() => false);
                 }
                 else
                 {
                     var possibleSecondaryTargets = party.AllLivingDamageMembers().ToArray();
-                    if (possibleSecondaryTargets.Length > 0 && Monster.random.NextFloat() < 0.05f)
+                    if (possibleSecondaryTargets.Length > 0 && Monster.random.NextFloat() < 0.10f)
                     {
                         possibleSecondaryTargets[Monster.random.Next(possibleSecondaryTargets.Length)].TakeDamage(DamagePerHit);
                     }

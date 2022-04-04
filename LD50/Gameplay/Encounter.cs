@@ -20,7 +20,7 @@ namespace LD50.Gameplay
             this.random = new NoiseBasedRNG(5656);
         }
 
-        public void StartCoroutines(Scene scene, Party party)
+        public void StartCoroutines(Scene scene, Party party, Chat chat)
         {
             foreach (var monster in this.monsters)
             {
@@ -29,7 +29,7 @@ namespace LD50.Gameplay
 
             foreach (var partyMember in party.AllLivingMembers())
             {
-                scene.StartCoroutine(partyMember.AttackCoroutine(this));
+                scene.StartCoroutine(partyMember.AttackCoroutine(this, chat));
             }
         }
 
