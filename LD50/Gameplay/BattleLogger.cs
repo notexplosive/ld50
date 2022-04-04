@@ -1,4 +1,6 @@
-﻿namespace LD50.Gameplay
+﻿using Microsoft.Xna.Framework;
+
+namespace LD50.Gameplay
 {
     public class BattleLogger
     {
@@ -17,6 +19,11 @@
             }
             
             this.chat.LogCombatEvent(message);
+        }
+
+        public void LogVictory()
+        {
+            this.chat.AppendColoredString("Victory!", Color.Yellow);
         }
     }
 }

@@ -37,8 +37,8 @@ namespace LD50.Gameplay
                 Difficulty.Boss,
                 new[]
                 {
-                    "Ultimate", "Gigantic", "Super Mega Ultra", "Final", "Diamond", "The Perfect", "The First",
-                    "The Forgotten", "The Last", "Iridescent"
+                    "Ultimate Final", "Gigantic", "Super Mega Ultra", "Diamond", "The Perfect", "The First",
+                    "The Forgotten", "The Last"
                 }
             }
         };

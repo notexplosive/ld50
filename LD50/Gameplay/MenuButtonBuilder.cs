@@ -23,15 +23,22 @@ namespace LD50.Gameplay
             };
             new QueueButtonRenderer(actor, role);
 
-            var roleName = role == PartyRole.Damage ? "Damage Dealer" : "Healer";
+            var text = "Tutorial";
 
-            var iconChild = actor.transform.AddActorAsChild("Icon", new Vector2(size.X / 2f, 0));
-            new SpriteRenderer(iconChild,
-                new SpriteFrame(MachinaClient.Assets.GetMachinaAsset<SpriteSheet>("roles"), (int) role));
+            if (role == PartyRole.Damage || role == PartyRole.Healer)
+            {
+                var roleName = role == PartyRole.Damage ? "Damage Dealer" : "Healer";
 
+                var iconChild = actor.transform.AddActorAsChild("Icon", new Vector2(size.X / 2f, 0));
+                new SpriteRenderer(iconChild,
+                    new SpriteFrame(MachinaClient.Assets.GetMachinaAsset<SpriteSheet>("roles"), (int) role));
+                text = $"Queue as {roleName}";
+            }
+            
             var textChild = actor.transform.AddActorAsChild("Text");
             new BoundingRect(textChild, size);
-            new BoundedTextRenderer(textChild, $"Queue as {roleName}", MachinaClient.Assets.GetSpriteFont("TitleFont"),
+            new BoundedTextRenderer(textChild, text,
+                MachinaClient.Assets.GetSpriteFont("TitleFont"),
                 Color.White, Alignment.Center);
         }
     }

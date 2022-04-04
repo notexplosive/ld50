@@ -16,10 +16,11 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace LD50
 {
-    internal class Ld50Cartridge : GameCartridge
+    public class Ld50Cartridge : GameCartridge
     {
         private Chat chat;
         private Party party;
+        private NoiseBasedRNG random;
 
         public Ld50Cartridge() : base(new Point(1600, 900), ResizeBehavior.KeepAspectRatio)
         {
@@ -29,6 +30,8 @@ namespace LD50
 
         public override void OnGameLoad(GameSpecification specification, MachinaRuntime runtime)
         {
+            this.random = new NoiseBasedRNG((uint) Random.Seed);
+            
             SceneLayers.BackgroundColor = new Color(20, 16, 19);
             Ld50Cartridge.FontMetrics = MachinaClient.Assets.GetSpriteFont("UIFont");
             var game = SceneLayers.AddNewScene();
@@ -48,7 +51,8 @@ namespace LD50
                     LayoutNode.HorizontalParent("content", LayoutSize.StretchedHorizontally(200),
                         new LayoutStyle(padding: 25),
                         LayoutNode.Leaf("healer-button", LayoutSize.StretchedBoth()),
-                        LayoutNode.Leaf("damage-button", LayoutSize.StretchedBoth())
+                        LayoutNode.Leaf("damage-button", LayoutSize.StretchedBoth()),
+                        LayoutNode.Leaf("tutorial-button", LayoutSize.StretchedBoth())
                     ),
                     LayoutNode.Spacer(20),
                     LayoutNode.Leaf("status", LayoutSize.StretchedHorizontally(50))
@@ -70,11 +74,16 @@ namespace LD50
             MenuButtonBuilder.BuildQueueButton(actors.GetActor("healer-button"), PartyRole.Healer, () =>
             {
                 queueText.Text = "Estimated Queue Time: 54 picosecond(s)";
-                LoadGameScene(game);
+                LoadGameScene(game, false);
             });
+            MenuButtonBuilder.BuildQueueButton(actors.GetActor("tutorial-button"), PartyRole.Tank, () =>
+            {
+                LoadGameScene(game, true);
+            });
+            
         }
 
-        private void LoadGameScene(Scene game)
+        private void LoadGameScene(Scene game, bool tutorial)
         {
             game.DeleteAllActors();
             var partyMemberLayoutNames = new[]
@@ -143,20 +152,33 @@ namespace LD50
 
             var player = new PartyMember(new BaseStats(30, 500, 10, 0, 1), "Player", PartyRole.Healer, PartyPortrait.Healer);
 
-            this.party = new Party(
-                new PartyMember(new BaseStats(100, 100, 0, 5, 1), "Terry", PartyRole.Tank),
-                new PartyMember(new BaseStats(35, 100, 0, 10, 2), "Miriam", PartyRole.Damage, PartyPortrait.Mage),
-                new PartyMember(new BaseStats(50, 100, 0, 5, 1), "Rodney", PartyRole.Damage, PartyPortrait.Rogue),
-                new PartyMember(new BaseStats(80, 100, 0, 7, 0.5f), "Helen", PartyRole.Damage, PartyPortrait.Druid),
-                player
-            );
+            if (tutorial)
+            {
+                this.party = new Party(
+                    new PartyMember(new BaseStats(80, 100, 0, 5, 1), "Advisor", PartyRole.Tank, PartyPortrait.Advisor),
+                    new PartyMember(new BaseStats(30, 100, 0, 0, 2), "Dummy", PartyRole.Damage, PartyPortrait.Dummy),
+                    new PartyMember(new BaseStats(35, 100, 0, 0, 1), "Dummier", PartyRole.Damage, PartyPortrait.Dummy),
+                    new PartyMember(new BaseStats(40, 100, 0, 0, 0.5f), "Dummest", PartyRole.Damage, PartyPortrait.Dummy),
+                    player
+                );
+            }
+            else
+            {
+                this.party = new Party(
+                    new PartyMember(new BaseStats(100, 100, 0, 5, 1), "Terry", PartyRole.Tank, PartyPortrait.Tank),
+                    new PartyMember(new BaseStats(35, 100, 0, 10, 2), "Miriam", PartyRole.Damage, PartyPortrait.Mage),
+                    new PartyMember(new BaseStats(50, 100, 0, 5, 1), "Rodney", PartyRole.Damage, PartyPortrait.Rogue),
+                    new PartyMember(new BaseStats(80, 100, 0, 7, 0.5f), "Helen", PartyRole.Damage, PartyPortrait.Druid),
+                    player
+                );
+            }
 
             this.chat = new Chat();
             var gameActor = game.AddActor("Game");
 
             var spellCaster =
                 new SpellCaster(gameActor, this.party, spells, player, new Cooldown(1f), new SpellLogger(this.chat));
-            var battleSystem = new BattleSystem(gameActor, this.party, new BattleLogger(this.chat));
+            var battleSystem = new BattleSystem(gameActor, this.party, new BattleLogger(this.chat), this.chat);
 
             battleSystem.EncounterEnded += this.party.ReviveAnyDeadPartyMembers;
 
@@ -202,10 +224,18 @@ namespace LD50
 
             new TooltipRenderer(chatActor, hoverableSpellTuples.ToArray());
 
-            game.StartCoroutine(battleSystem.PrimaryLoopCoroutine((uint) Random.Seed));
+            if (tutorial)
+            {
+                game.StartCoroutine(battleSystem.TutorialCoroutine(game, this));
+            }
+            else
+            {
+                game.StartCoroutine(battleSystem.PrimaryLoopCoroutine((uint)this.random.Next()));
+            }
+
         }
 
-        private IEnumerator<ICoroutineAction> GoBackToMainMenuAfterDelay(Scene game)
+        public IEnumerator<ICoroutineAction> GoBackToMainMenuAfterDelay(Scene game)
         {
             yield return new WaitSeconds(5);
             LoadMenuScene(game);

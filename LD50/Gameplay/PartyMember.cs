@@ -6,15 +6,6 @@ using Machina.Engine;
 
 namespace LD50.Gameplay
 {
-    public enum PartyPortrait
-    {
-        Tank,
-        Mage,
-        Rogue,
-        Druid,
-        Healer
-    }
-    
     public delegate void PartyMemberEvent(PartyMember member);
     
     public class PartyMember
