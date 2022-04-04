@@ -11,6 +11,11 @@
 
         public void Log(string message)
         {
+            if (this.chat == null)
+            {
+                return;
+            }
+            
             this.chat.LogCombatEvent(message);
         }
     }

@@ -29,7 +29,7 @@ namespace LD50
 
         public override void OnGameLoad(GameSpecification specification, MachinaRuntime runtime)
         {
-            SceneLayers.BackgroundColor = Color.Black;
+            SceneLayers.BackgroundColor = new Color(20, 16, 19);
             Ld50Cartridge.FontMetrics = MachinaClient.Assets.GetSpriteFont("UIFont");
 
             var game = SceneLayers.AddNewScene();
@@ -47,7 +47,7 @@ namespace LD50
             {
                 new SingleTargetSpell("Lesser Heal", 1.5f, 30, 20, EmptyBuff.Create(), 0f, 1, 0),
                 new SingleTargetSpell("Greater Heal", 6f, 50, 50, EmptyBuff.Create(), 0f, 2, 1),
-                new SingleTargetSpell("Healing Salve", 0.5f, 40, 0, HealOverTimeBuff.Create(6f, 35), 8f, 3, 2),
+                new SingleTargetSpell("Healing Wind", 0.5f, 40, 0, HealOverTimeBuff.Create(6f, 35), 8f, 3, 2),
                 new SingleTargetSpell("Power Word: Shield", 0.5f, 40, 0, ShieldBuff.Create(5f, 100), 10f, 4, 3),
                 new WholePartySpell("Divine Explosion", 0f, 50, 25, EmptyBuff.Create(), 40f, 5, 4)
                 // new SingleTargetSpell("Clear Debuff"),
@@ -153,7 +153,7 @@ namespace LD50
 
             new TooltipRenderer(chatActor, hoverableSpellTuples.ToArray());
 
-            game.StartCoroutine(battleSystem.CombatLoopCoroutine());
+            game.StartCoroutine(battleSystem.PrimaryLoopCoroutine((uint) Random.Seed));
         }
 
         private void CheckGameOverStatus(PartyMember member)
@@ -171,7 +171,7 @@ namespace LD50
             loader.AddMachinaAssetCallback("ui-patch", () =>
             {
                 var uiPatchImage = MachinaClient.Assets.GetTexture("ui-patch-sheet");
-                return new NinepatchSheet(uiPatchImage, uiPatchImage.Bounds, new Rectangle(6, 6, 24, 24),
+                return new NinepatchSheet(uiPatchImage, uiPatchImage.Bounds, new Rectangle(4, 4, 32, 32),
                     runtime.Painter);
             });
             
@@ -185,7 +185,7 @@ namespace LD50
             loader.AddMachinaAssetCallback("chat-patch", () =>
             {
                 var uiPatchImage = MachinaClient.Assets.GetTexture("chat-patch-sheet");
-                return new NinepatchSheet(uiPatchImage, uiPatchImage.Bounds, new Rectangle(6, 6, 24, 24),
+                return new NinepatchSheet(uiPatchImage, uiPatchImage.Bounds, new Rectangle(4, 4, 32, 32),
                     runtime.Painter);
             });
 

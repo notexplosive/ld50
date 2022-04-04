@@ -110,6 +110,16 @@ namespace LD50.Gameplay
                 return false;
             }
             
+            var spell = pendingSpell.Spell;
+            var hoveredPartyMember = pendingSpell.TargetPartyMember;
+            
+            if (hoveredPartyMember == null && spell is SingleTargetSpell)
+            {
+                this.logger.Log("You need to be hovering a target.");
+                ClearBufferedSpell();
+                return false;
+            }
+            
             if (!this.castingTween.IsDone())
             {
                 var timeLeft = InProgressSpell.Spell.CastDuration - this.percentTweenable.CurrentValue * InProgressSpell.Spell.CastDuration;
@@ -141,9 +151,6 @@ namespace LD50.Gameplay
 
             }
 
-            var spell = pendingSpell.Spell;
-            var hoveredPartyMember = pendingSpell.TargetPartyMember;
-            
             if (!spell.Cooldown.IsReady())
             {
                 if (spell.Cooldown.RemainingTime() < SpellCaster.BufferWindow)
@@ -155,12 +162,6 @@ namespace LD50.Gameplay
                     this.logger.Log("Not ready yet.");
                 }
 
-                return false;
-            }
-
-            if (hoveredPartyMember == null && spell is SingleTargetSpell)
-            {
-                this.logger.Log("You need to be hovering a target.");
                 return false;
             }
 

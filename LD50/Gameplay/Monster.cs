@@ -15,12 +15,12 @@ namespace LD50.Gameplay
         public bool IsDead => Health <= 0;
         public string Name { get; }
 
-        public Monster(int health, int damagePerHit, float attackDelay)
+        public Monster(int health, int damagePerHit, float attackDelay, string name = "Monster")
         {
             Health = health;
             DamagePerHit = damagePerHit;
             AttackDelay = attackDelay;
-            Name = GetHashCode().ToString();
+            Name = name;
 
             this.initialDelay = Monster.random.NextFloat() * attackDelay;
         }

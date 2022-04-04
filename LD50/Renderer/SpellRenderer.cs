@@ -45,7 +45,7 @@ namespace LD50.Renderer
             }
             
             var spellsSheet = MachinaClient.Assets.GetMachinaAsset<SpriteSheet>("spells");
-            spellsSheet.DrawFrame(spriteBatch, this.spell.FrameIndex, this.boundingRectangle.Rect.Center.ToVector2(), 1f, 0f, XYBool.False, transform.Depth - 10, Color.White, true);
+            spellsSheet.DrawFrame(spriteBatch, this.spell.FrameIndex, this.boundingRectangle.Rect.Center.ToVector2(), 1f, 0f, XYBool.False, transform.Depth - 1, Color.White, true);
 
             Cooldown renderedCooldown;
 
@@ -63,7 +63,7 @@ namespace LD50.Renderer
                 var cooldownRect = this.boundingRectangle.Rect;
                 cooldownRect = new Rectangle(cooldownRect.Location,
                     new Point(cooldownRect.Size.X, (int) (cooldownRect.Size.Y * renderedCooldown.Percent())));
-                spriteBatch.FillRectangle(cooldownRect, Color.DarkBlue.WithMultipliedOpacity(0.5f), transform.Depth - 20);
+                spriteBatch.FillRectangle(cooldownRect, Color.DarkBlue.WithMultipliedOpacity(0.5f), transform.Depth - 100);
             }
         }
     }

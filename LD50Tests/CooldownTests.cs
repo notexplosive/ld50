@@ -18,7 +18,7 @@ namespace LD50Tests
             var party = new Party();
 
             var actor = new Actor("Test Actor", null);
-            var spellCaster = new SpellCaster(actor, party, spells, new PartyMember(new BaseStats()), new Cooldown(0));
+            var spellCaster = new SpellCaster(actor, party, spells, new PartyMember(new BaseStats()), new Cooldown(0), new SpellLogger(new Chat()));
 
             spellCaster.TryToCastSpell(0).Should().BeTrue();
             spellCaster.TryToCastSpell(0).Should().BeFalse();
@@ -37,7 +37,8 @@ namespace LD50Tests
             var party = new Party();
 
             var actor = new Actor("Test Actor", null);
-            var spellCaster = new SpellCaster(actor, party, spells, new PartyMember(new BaseStats()), new Cooldown(0));
+            var spellCaster = new SpellCaster(actor, party, spells, new PartyMember(new BaseStats()), new Cooldown(0),
+                new SpellLogger(new Chat()));
 
             spellCaster.TryToCastSpell(0).Should().BeTrue();
             spellCaster.TryToCastSpell(1).Should().BeTrue();
@@ -54,7 +55,8 @@ namespace LD50Tests
             var party = new Party();
 
             var actor = new Actor("Test Actor", null);
-            var spellCaster = new SpellCaster(actor, party, spells, new PartyMember(new BaseStats()), new Cooldown(0.5f));
+            var spellCaster = new SpellCaster(actor, party, spells, new PartyMember(new BaseStats()),
+                new Cooldown(0.5f), new SpellLogger(new Chat()));
 
             spellCaster.TryToCastSpell(0).Should().BeTrue();
             spellCaster.TryToCastSpell(1).Should().BeFalse();
@@ -71,7 +73,9 @@ namespace LD50Tests
             var party = new Party();
 
             var actor = new Actor("Test Actor", null);
-            var spellCaster = new SpellCaster(actor, party, spells, new PartyMember(new BaseStats()), new Cooldown(0.5f));
+            var spellCaster =
+                new SpellCaster(actor, party, spells, new PartyMember(new BaseStats()), new Cooldown(0.5f),
+                    new SpellLogger(new Chat()));
 
             spellCaster.TryToCastSpell(0).Should().BeTrue();
             spellCaster.Update(1f);

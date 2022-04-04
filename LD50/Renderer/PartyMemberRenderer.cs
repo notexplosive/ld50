@@ -95,9 +95,9 @@ namespace LD50.Renderer
         {
             var portraitRegion = this.layout.GetNode("portrait", this.boundingRect.Location);
             var rect = portraitRegion.Rectangle;
-            var position = rect.Location.ToVector2() +
-                           new Vector2(rect.Width * MachinaClient.RandomDirty.NextFloat(),
-                               rect.Height * MachinaClient.RandomDirty.NextFloat());
+            var position = rect.Location.ToVector2() + new Vector2(rect.Width / 2f, rect.Height / 2f);
+            position += new Vector2(MachinaClient.RandomDirty.NextFloat() - 0.5f,
+                MachinaClient.RandomDirty.NextFloat() - 0.5f) * 10;
 
             var numberActor = this.actor.scene.AddActor("Number", position);
             numberActor.transform.Depth = transform.Depth - 1000;
@@ -160,14 +160,14 @@ namespace LD50.Renderer
 
             var healthFill = new Rectangle(health.Rectangle.Location,
                 new Point((int) (health.Rectangle.Width * this.partyMember.HealthPercent), health.Rectangle.Height));
-            spriteBatch.FillRectangle(healthFill, Color.Red, transform.Depth - 5);
-            spriteBatch.DrawRectangle(health.Rectangle, Color.Black, 1f, transform.Depth - 10);
+            spriteBatch.FillRectangle(healthFill, new Color(115, 23, 45), transform.Depth - 5);
+            spriteBatch.DrawRectangle(health.Rectangle, Color.Black, 2f, transform.Depth - 10);
 
             // duplicate code alert!! should have a DrawFilledBar helper method
             var manaFill = new Rectangle(mana.Rectangle.Location,
                 new Point((int) (mana.Rectangle.Width * this.partyMember.ManaPercent), mana.Rectangle.Height));
-            spriteBatch.FillRectangle(manaFill, Color.Blue, transform.Depth - 5);
-            spriteBatch.DrawRectangle(mana.Rectangle, Color.Black, 1f, transform.Depth - 10);
+            spriteBatch.FillRectangle(manaFill, new Color(40, 92, 196), transform.Depth - 5);
+            spriteBatch.DrawRectangle(mana.Rectangle, Color.Black, 2f, transform.Depth - 10);
 
             var buffIndex = 0;
             var buffSize = new Point(buffsRegion.Rectangle.Height);

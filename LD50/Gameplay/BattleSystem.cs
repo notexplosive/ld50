@@ -22,28 +22,27 @@ namespace LD50.Gameplay
 
         public void StartNewEncounter(Encounter encounter)
         {
-            this.logger.Log("Encounter started!");
             CurrentEncounter = encounter;
             CurrentEncounter.StartCoroutines(this.actor.scene, this.party);
         }
 
-        public IEnumerator<ICoroutineAction> CombatLoopCoroutine()
+        public IEnumerator<ICoroutineAction> PrimaryLoopCoroutine(uint randomSeed)
         {
+            int level = 0;
+            var maker = new MonsterMaker(randomSeed);
             while (true)
             {
-                var encounter = new Encounter(this.logger,
-                    new Monster(100, 10, 2f),
-                    new Monster(100, 3, 0.1f));
+                var encounter = maker.CreateEncounter(level, this.logger);
                 StartNewEncounter(encounter);
                 yield return new WaitUntil(CurrentEncounter.IsFightOver);
                 FinishEncounter();
+                level++;
                 yield return new WaitSeconds(5);
             }
         }
-
+        
         private void FinishEncounter()
         {
-            this.logger.Log("Encounter ended!");
             CurrentEncounter = new Encounter(this.logger);
             EncounterEnded?.Invoke();
         }
