@@ -7,32 +7,46 @@ namespace LD50.Gameplay
         public static int GetIdealHealthAtLevel(int level)
         {
             // essentially a function of how long the battle lasts
-            return 1000 + level * 50;
+
+            var total = 500 + level * 25;
+            
+            if (GetDifficultyForLevel(level) == Difficulty.Boss)
+            {
+                total += 200;
+            }
+
+            return total;
         }
         
         public static float GetIdealDelayAtLevel(int level)
         {
-            return Math.Max(3f - level / 10f, 0.25f);
+            var ideal = 3f - (level + 3) / 5f;
+            return Math.Max(ideal, 0.25f);
         }
         
         public static Difficulty GetDifficultyForLevel(int level)
         {
-            if (level < 5)
+            if (level < 1)
             {
                 return Difficulty.Easy;
             }
 
-            if (level < 10)
+            if (level < 4)
             {
                 return Difficulty.Medium;
             }
 
-            return Difficulty.Hard;
+            if (level < 6)
+            {
+                return Difficulty.Hard;
+            }
+
+            return Difficulty.Boss;
         }
         
         public static int GetIdealDamageAtLevel(int level)
         {
-            return 10 + level * 2;
+            return 24 + level / 2;
         }
         
         public static float GetMonsterAttackDelay(int level)

@@ -67,7 +67,7 @@ namespace LD50
             var titleFont = MachinaClient.Assets.GetSpriteFont("TitleFont");
             var giantFont = MachinaClient.Assets.GetSpriteFont("GiantFont");
             
-            new BoundedTextRenderer(actors.GetActor("title"), "Support System", giantFont, Color.White, Alignment.Center);
+            new BoundedTextRenderer(actors.GetActor("title"), "Support Simulator", giantFont, Color.White, Alignment.Center);
             new BoundedTextRenderer(actors.GetActor("credits"), "notexplosive.net", uiFont, Color.White, Alignment.TopCenter);
             
             var queueText = new BoundedTextRenderer(actors.GetActor("status"), "", uiFont, Color.White, Alignment.Center);

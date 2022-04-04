@@ -8,19 +8,20 @@ namespace LD50.Gameplay
 {
     public class BattleSystem : BaseComponent
     {
-        public event Action EncounterEnded;
-        public Encounter CurrentEncounter { get; private set; }
-        private readonly Party party;
-        private readonly BattleLogger logger;
         private readonly Chat chat;
+        private readonly BattleLogger logger;
+        private readonly Party party;
 
         public BattleSystem(Actor actor, Party party, BattleLogger logger, Chat chat) : base(actor)
         {
             this.chat = chat;
             this.logger = logger;
             this.party = party;
-            CurrentEncounter = new Encounter(logger);
+            CurrentEncounter = new Encounter(0, logger);
         }
+
+        public Encounter CurrentEncounter { get; private set; }
+        public event Action EncounterEnded;
 
         public void StartNewEncounter(Encounter encounter)
         {
@@ -30,21 +31,23 @@ namespace LD50.Gameplay
 
         public IEnumerator<ICoroutineAction> TutorialCoroutine(Scene game, Ld50Cartridge cartridge)
         {
-            var maker = new MonsterMaker(1532);
-            
             this.party.EnterCombat();
             yield return game.StartCoroutine(Cinematic.TutorialIntro(this.chat, this.party, this));
             yield return game.StartCoroutine(cartridge.GoBackToMainMenuAfterDelay(game));
         }
-        
+
         public IEnumerator<ICoroutineAction> PrimaryLoopCoroutine(uint randomSeed)
         {
-            int level = 0;
+            var level = 0;
             var maker = new MonsterMaker(randomSeed);
             while (true)
             {
-                this.party.EnterCombat();
                 var encounter = maker.CreateEncounter(level, this.logger);
+                yield return new WaitSeconds(5);
+                Battlecry();
+                yield return new WaitSeconds(1);
+                this.party.EnterCombat();
+                encounter.PrintStatus(maker);
                 StartNewEncounter(encounter);
                 yield return new WaitUntil(CurrentEncounter.IsFightOver);
                 FinishEncounter();
@@ -52,13 +55,23 @@ namespace LD50.Gameplay
                 this.party.LeaveCombat();
                 yield return new WaitSeconds(0.5f);
                 yield return new WaitUntil(this.party.IsFullyRegenerated);
-                yield return new WaitSeconds(5);
             }
         }
-        
+
+        private void Battlecry()
+        {
+            var array = new[]
+            {
+                "Going in!", "Let's do this!", "Let's go!", "Pulling!", "Charging!", "Attacking!", "Ready?",
+                "Here we go!"
+            };
+            var message = array[MachinaClient.RandomDirty.Next(array.Length)];
+            this.chat.PartyMemberSay(this.party.GetMember(0), message);
+        }
+
         public void FinishEncounter()
         {
-            CurrentEncounter = new Encounter(this.logger);
+            CurrentEncounter = new Encounter(0, this.logger);
             this.logger.LogVictory();
             EncounterEnded?.Invoke();
         }

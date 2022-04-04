@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 using Machina.Data;
 
 namespace LD50.Gameplay
@@ -37,8 +38,8 @@ namespace LD50.Gameplay
                 Difficulty.Boss,
                 new[]
                 {
-                    "Ultimate Final", "Gigantic", "Super Mega Ultra", "Diamond", "The Perfect", "The First",
-                    "The Forgotten", "The Last"
+                    "Ultimate Final", "Super Mega Ultra", "Diamond", "Perfect", "First",
+                    "Forgotten", "Last", "Ancient"
                 }
             }
         };
@@ -50,9 +51,9 @@ namespace LD50.Gameplay
         
         private readonly string[] possibleNouns =
         {
-            "Goblin", "Bandit", "Kobold", "Golem", "Snake", "Boar", "Wolf", "Trout", "Fox", "Panther", "Lion",
+            "Goblin", "Bandit", "Kobold", "Golem", "Snake", "Boar", "Wolf", "Trout", "Buff Cat", "Panther", "Lion",
             "Motorcycle", "Elemental", "Slime", "Squid", "Frog", "Toad", "Walking Mushroom", "Tree Person", "Spider",
-            "Dragon", "Centaur"
+            "Dragon", "Centaur", "Crab", "Chicken"
         };
 
         private readonly NoiseBasedRNG random;
@@ -65,8 +66,14 @@ namespace LD50.Gameplay
         public Encounter CreateEncounter(int level, BattleLogger logger)
         {
             var monsters = new List<Monster>();
-
+            
             var numberOfMonsters = GetNumberOfMonsters();
+
+            if (TuningKnobs.GetDifficultyForLevel(level) == Difficulty.Boss)
+            {
+                numberOfMonsters = 1;
+            }
+            
             var monsterName = GetMonsterName(level);
 
             for (var i = 0; i < numberOfMonsters; i++)
@@ -76,21 +83,10 @@ namespace LD50.Gameplay
                     TuningKnobs.GetMonsterAttackDelay(level), monsterName));
             }
 
-            logger.LogStatus($"(Level {level})");
-            
-            if (numberOfMonsters > 1)
-            {
-                logger.LogNormal($"A {RandomPlurality()} of {numberOfMonsters} {monsterName}s attacks!");
-            }
-            else
-            {
-                logger.LogNormal($"A {monsterName} attacks!");
-            }
-
-            return new Encounter(logger, monsters.ToArray());
+            return new Encounter(level, logger, monsters.ToArray());
         }
 
-        private string RandomPlurality()
+        public string RandomPlurality()
         {
             return this.plurality[this.random.Next(this.plurality.Length)];
         }
@@ -107,7 +103,45 @@ namespace LD50.Gameplay
 
         private string GetMonsterName(int level)
         {
+            if (TuningKnobs.GetDifficultyForLevel(level) == Difficulty.Boss)
+            {
+                return $"{GetBossName()}, The {GetAdjective(level)} {GetNoun()}";                
+            }
+            
             return $"{GetAdjective(level)} {GetNoun()}";
+        }
+
+        private string GetBossName()
+        {
+            var consonants = new[] { 'x', 'c', 'd', 'k', 'n', 'b', 'v', 'r', 'p' };
+            var vowels = new[] {'a', 'e', 'o', 'u', '\''};
+
+            this.random.Next(consonants.Length);
+
+            string Consonant()
+            {
+                return consonants[this.random.Next(consonants.Length)].ToString();
+            }
+            
+            string Vowel()
+            {
+                return vowels[this.random.Next(vowels.Length)].ToString();
+            }
+
+            var name = new StringBuilder();
+            name.Append(Consonant().ToUpper());
+            name.Append(Consonant());
+            name.Append(Vowel());
+            name.Append(Consonant());
+            name.Append(Consonant());
+            name.Append(Vowel());
+            name.Append(Consonant());
+            name.Append(Consonant());
+            name.Append(Consonant());
+            name.Append(Vowel());
+            name.Append(Consonant());
+
+            return name.ToString();
         }
 
         private string GetNoun()

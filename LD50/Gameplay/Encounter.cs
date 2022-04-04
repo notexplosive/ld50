@@ -12,13 +12,17 @@ namespace LD50.Gameplay
         private readonly Monster[] monsters;
         private readonly NoiseBasedRNG random;
         public BattleLogger Logger { get; }
+        public int NumberOfMonsters => this.monsters.Length;
 
-        public Encounter(BattleLogger logger, params Monster[] monsters)
+        public Encounter(int level, BattleLogger logger, params Monster[] monsters)
         {
+            Level = level;
             Logger = logger;
             this.monsters = monsters;
             this.random = new NoiseBasedRNG(5656);
         }
+
+        public int Level { get; }
 
         public void StartCoroutines(Scene scene, Party party, Chat chat)
         {
@@ -58,6 +62,21 @@ namespace LD50.Gameplay
                 {
                     yield return monster;
                 }
+            }
+        }
+
+        public void PrintStatus(MonsterMaker maker)
+        {
+            Logger.LogStatus($"(Level {Level+1})");
+
+            var monsterName = this.monsters[0].Name;
+            if (NumberOfMonsters > 1)
+            {
+                Logger.LogNormal($"A {maker.RandomPlurality()} of {NumberOfMonsters} {monsterName}s attacks!");
+            }
+            else
+            {
+                Logger.LogNormal($"{monsterName} attacks!");
             }
         }
     }
