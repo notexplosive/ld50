@@ -27,7 +27,7 @@ namespace LD50.Renderer
 
         public override void Draw(SpriteBatch spriteBatch)
         {
-            spriteBatch.DrawRectangle(this.boundingRect.Rect, Color.Black, 1f, transform.Depth - 10);
+            spriteBatch.DrawRectangle(this.boundingRect.Rect, Color.White, 3f, transform.Depth - 10);
 
             var fillRect = new Rectangle(this.boundingRect.Rect.Location,
                 new Point((int) (this.boundingRect.Rect.Size.X * this.spellCaster.Percent),
@@ -50,7 +50,7 @@ namespace LD50.Renderer
                 var percent = durationUpToWindow / this.spellCaster.InProgressSpell.Spell.CastDuration;
                 
                 var alongMark = fillRect.Location.ToVector2() + new Vector2(this.boundingRect.Width * percent, 0);
-                spriteBatch.DrawLine(alongMark, alongMark + new Vector2(0, fillRect.Height), Color.Black, 1f,
+                spriteBatch.DrawLine(alongMark, alongMark + new Vector2(0, fillRect.Height), Color.White.WithMultipliedOpacity(0.5f), 4f,
                     transform.Depth - 10);
             }
         }
