@@ -31,9 +31,48 @@ namespace LD50
         {
             SceneLayers.BackgroundColor = new Color(20, 16, 19);
             Ld50Cartridge.FontMetrics = MachinaClient.Assets.GetSpriteFont("UIFont");
-
             var game = SceneLayers.AddNewScene();
+            LoadMenuScene(game);
+        }
 
+        private void LoadMenuScene(Scene game)
+        {
+            game.DeleteAllActors();
+
+            var layout = LayoutNode.HorizontalParent("screen", LayoutSize.Pixels(1600, 900), new LayoutStyle(),
+                LayoutNode.StretchedSpacer(),
+                LayoutNode.VerticalParent("menu-column", LayoutSize.StretchedVertically(1000),
+                    new LayoutStyle(alignment: Alignment.Center),
+                    LayoutNode.Leaf("title", LayoutSize.StretchedHorizontally(100)),
+                    LayoutNode.Leaf("credits", LayoutSize.StretchedHorizontally(100)),
+                    LayoutNode.HorizontalParent("content", LayoutSize.StretchedHorizontally(200),
+                        new LayoutStyle(padding: 25),
+                        LayoutNode.Leaf("healer-button", LayoutSize.StretchedBoth()),
+                        LayoutNode.Leaf("damage-button", LayoutSize.StretchedBoth())
+                    ),
+                    LayoutNode.Spacer(20),
+                    LayoutNode.Leaf("status", LayoutSize.StretchedHorizontally(50))
+                ),
+                LayoutNode.StretchedSpacer()
+            );
+
+            var actors = new LayoutActors(game, layout.Bake());
+
+            var uiFont = MachinaClient.Assets.GetSpriteFont("UIFont");
+            var titleFont = MachinaClient.Assets.GetSpriteFont("TitleFont");
+            var giantFont = MachinaClient.Assets.GetSpriteFont("GiantFont");
+            
+            new BoundedTextRenderer(actors.GetActor("title"), "Support System", giantFont, Color.White, Alignment.Center);
+            new BoundedTextRenderer(actors.GetActor("credits"), "notexplosive.net", uiFont, Color.White, Alignment.TopCenter);
+            
+            var queueText = new BoundedTextRenderer(actors.GetActor("status"), "", uiFont, Color.White, Alignment.Center);
+            MenuButtonBuilder.BuildQueueButton(actors.GetActor("damage-button"), PartyRole.Damage, () => queueText.Text = "Estimated Queue Time: 1.3 year(s)");
+            MenuButtonBuilder.BuildQueueButton(actors.GetActor("healer-button"), PartyRole.Healer, () => LoadGameScene(game));
+        }
+
+        private void LoadGameScene(Scene game)
+        {
+            game.DeleteAllActors();
             var partyMemberLayoutNames = new[]
             {
                 "party-member-1",
@@ -103,7 +142,7 @@ namespace LD50
             this.party = new Party(
                 new PartyMember(new BaseStats(100, 100, 0, 5, 1), "Terry", PartyRole.Tank),
                 new PartyMember(new BaseStats(35, 100, 0, 10, 2), "Miriam", PartyRole.Damage, PartyPortrait.Mage),
-                new PartyMember(new BaseStats(50, 100, 0, 5, 1), "Rodney", PartyRole.Damage,  PartyPortrait.Rogue),
+                new PartyMember(new BaseStats(50, 100, 0, 5, 1), "Rodney", PartyRole.Damage, PartyPortrait.Rogue),
                 new PartyMember(new BaseStats(80, 100, 0, 7, 0.5f), "Helen", PartyRole.Damage, PartyPortrait.Druid),
                 player
             );
@@ -111,7 +150,8 @@ namespace LD50
             this.chat = new Chat();
             var gameActor = game.AddActor("Game");
 
-            var spellCaster = new SpellCaster(gameActor, this.party, spells, player, new Cooldown(1f), new SpellLogger(this.chat));
+            var spellCaster =
+                new SpellCaster(gameActor, this.party, spells, player, new Cooldown(1f), new SpellLogger(this.chat));
             var battleSystem = new BattleSystem(gameActor, this.party, new BattleLogger(this.chat));
 
             battleSystem.EncounterEnded += this.party.ReviveAnyDeadPartyMembers;
@@ -139,14 +179,14 @@ namespace LD50
                 partyMemberIndex++;
             }
 
-            
             var hoverableSpellTuples = new List<Tuple<Hoverable, ISpell>>();
-            
+
             foreach (var spell in spells)
             {
                 var spellRoot = layoutActors.GetActor(spell.Name);
                 SpellInterface.CreateFromActor(spellRoot, spellCaster, spell);
-                hoverableSpellTuples.Add(new Tuple<Hoverable, ISpell>(layoutActors.GetActor(spell.Name).GetComponent<Hoverable>(), spell));
+                hoverableSpellTuples.Add(
+                    new Tuple<Hoverable, ISpell>(layoutActors.GetActor(spell.Name).GetComponent<Hoverable>(), spell));
             }
 
             new TooltipRenderer(chatActor, hoverableSpellTuples.ToArray());
