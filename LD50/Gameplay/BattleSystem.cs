@@ -48,6 +48,7 @@ namespace LD50.Gameplay
                 yield return new WaitSeconds(1);
                 this.party.EnterCombat();
                 encounter.PrintStatus(maker);
+                MachinaClient.SoundEffectPlayer.PlaySound(encounter.GetRandomLivingMonster().SoundEffects.DealDamage);
                 StartNewEncounter(encounter);
                 yield return new WaitUntil(CurrentEncounter.IsFightOver);
                 FinishEncounter();

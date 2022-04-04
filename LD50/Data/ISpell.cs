@@ -104,5 +104,6 @@ namespace LD50.Data
         }
 
         bool AttemptedRecently { get; set; }
+        string SoundEffect { get; }
     }
 }

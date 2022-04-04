@@ -12,7 +12,6 @@ using Machina.Engine;
 using Machina.Engine.Assets;
 using Machina.Engine.Cartridges;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 
 namespace LD50
 {
@@ -32,7 +31,7 @@ namespace LD50
         {
             this.random = new NoiseBasedRNG((uint) Random.Seed);
             Monster.random = new NoiseBasedRNG((uint) Random.Seed);
-            
+
             SceneLayers.BackgroundColor = new Color(20, 16, 19);
             Ld50Cartridge.FontMetrics = MachinaClient.Assets.GetSpriteFont("UIFont");
             var game = SceneLayers.AddNewScene();
@@ -66,22 +65,23 @@ namespace LD50
             var uiFont = MachinaClient.Assets.GetSpriteFont("UIFont");
             var titleFont = MachinaClient.Assets.GetSpriteFont("TitleFont");
             var giantFont = MachinaClient.Assets.GetSpriteFont("GiantFont");
-            
-            new BoundedTextRenderer(actors.GetActor("title"), "Support Simulator", giantFont, Color.White, Alignment.Center);
-            new BoundedTextRenderer(actors.GetActor("credits"), "notexplosive.net", uiFont, Color.White, Alignment.TopCenter);
-            
-            var queueText = new BoundedTextRenderer(actors.GetActor("status"), "", uiFont, Color.White, Alignment.Center);
-            MenuButtonBuilder.BuildQueueButton(actors.GetActor("damage-button"), PartyRole.Damage, () => queueText.Text = "Estimated Queue Time: 1.3 year(s)");
+
+            new BoundedTextRenderer(actors.GetActor("title"), "Support Simulator", giantFont, Color.White,
+                Alignment.Center);
+            new BoundedTextRenderer(actors.GetActor("credits"), "notexplosive.net", uiFont, Color.White,
+                Alignment.TopCenter);
+
+            var queueText =
+                new BoundedTextRenderer(actors.GetActor("status"), "", uiFont, Color.White, Alignment.Center);
+            MenuButtonBuilder.BuildQueueButton(actors.GetActor("damage-button"), PartyRole.Damage,
+                () => queueText.Text = "Estimated Queue Time: 1.3 year(s)");
             MenuButtonBuilder.BuildQueueButton(actors.GetActor("healer-button"), PartyRole.Healer, () =>
             {
                 queueText.Text = "Estimated Queue Time: 54 picosecond(s)";
                 LoadGameScene(game, false);
             });
-            MenuButtonBuilder.BuildQueueButton(actors.GetActor("tutorial-button"), PartyRole.Tank, () =>
-            {
-                LoadGameScene(game, true);
-            });
-            
+            MenuButtonBuilder.BuildQueueButton(actors.GetActor("tutorial-button"), PartyRole.Tank,
+                () => { LoadGameScene(game, true); });
         }
 
         private void LoadGameScene(Scene game, bool tutorial)
@@ -98,11 +98,11 @@ namespace LD50
 
             var spells = new ISpell[]
             {
-                new SingleTargetSpell("Lesser Heal", 1.5f, 60, 30, EmptyBuff.Create(), 0f, 1, 0),
-                new SingleTargetSpell("Greater Heal", 6f, 70, 50, EmptyBuff.Create(), 0f, 2, 1),
-                new SingleTargetSpell("Healing Wind", 0.5f, 80, 0, HealOverTimeBuff.Create(6f, 35), 8f, 3, 2),
-                new SingleTargetSpell("Power Word: Shield", 0.5f, 70, 0, ShieldBuff.Create(5f, 200), 15f, 4, 3),
-                new WholePartySpell("Divine Explosion", 0f, 50, 25, EmptyBuff.Create(), 40f, 5, 4)
+                new SingleTargetSpell("Lesser Heal", 1.5f, 60, 30, EmptyBuff.Create(), 0f, 1),
+                new SingleTargetSpell("Greater Heal", 6f, 70, 60, EmptyBuff.Create(), 0f, 2, 1, "heal_slow"),
+                new SingleTargetSpell("Healing Wind", 0.5f, 80, 0, HealOverTimeBuff.Create(6f, 35), 8f, 3, 2, "heal_over_time"),
+                new SingleTargetSpell("Power Word: Shield", 0.5f, 70, 0, ShieldBuff.Create(5f, 200), 15f, 4, 3, "shield"),
+                new WholePartySpell("Divine Explosion", 0f, 100, 60, EmptyBuff.Create(), 40f, 5, 4, "heal_slow")
                 // new SingleTargetSpell("Clear Debuff"),
                 // new SingleTargetSpell("Revive")
             };
@@ -151,25 +151,35 @@ namespace LD50
 
             var layoutActors = new LayoutActors(game, layout.Bake());
 
-            var player = new PartyMember(new BaseStats(30, 500, 10, 0, 1), "Player", PartyRole.Healer, PartyPortrait.Healer);
+            var player = new PartyMember(new BaseStats(30, 500, 10), "Player", PartyRole.Healer, PartyPortrait.Healer, new SoundEffects("ouch", "hurt_1", "final_ouch"));
 
             if (tutorial)
             {
+                var dummySoundEffects = new SoundEffects("ouch", "hurt_1", "hurt_1");
                 this.party = new Party(
-                    new PartyMember(new BaseStats(80, 100, 0, 5, 1), "Advisor", PartyRole.Tank, PartyPortrait.Advisor),
-                    new PartyMember(new BaseStats(30, 100, 0, 0, 2), "Dummy", PartyRole.Damage, PartyPortrait.Dummy),
-                    new PartyMember(new BaseStats(35, 100, 0, 0, 1), "Dummier", PartyRole.Damage, PartyPortrait.Dummy),
-                    new PartyMember(new BaseStats(40, 100, 0, 0, 0.5f), "Dummest", PartyRole.Damage, PartyPortrait.Dummy),
+                    new PartyMember(
+                        new BaseStats(80, 100, 0, 5), "Advisor", PartyRole.Tank, PartyPortrait.Advisor,
+                        dummySoundEffects),
+                    new PartyMember(new BaseStats(30, 100, 0, 0, 2), "Dummy", PartyRole.Damage, PartyPortrait.Dummy,
+                        dummySoundEffects),
+                    new PartyMember(new BaseStats(35, 100), "Dummier", PartyRole.Damage, PartyPortrait.Dummy,
+                        dummySoundEffects),
+                    new PartyMember(new BaseStats(40, 100, 0, 0, 0.5f), "Dummest", PartyRole.Damage,
+                        PartyPortrait.Dummy, dummySoundEffects),
                     player
                 );
             }
             else
             {
                 this.party = new Party(
-                    new PartyMember(new BaseStats(100, 100, 10, 5, 1), "Terry", PartyRole.Tank, PartyPortrait.Tank),
-                    new PartyMember(new BaseStats(35, 40, 30, 20, 2.33f), "Miriam", PartyRole.Damage, PartyPortrait.Mage),
-                    new PartyMember(new BaseStats(50, 20, 30, 5, 0.55f), "Rodney", PartyRole.Damage, PartyPortrait.Rogue),
-                    new PartyMember(new BaseStats(80, 50, 30, 10, 1.1f), "Helen", PartyRole.Damage, PartyPortrait.Druid),
+                    new PartyMember(new BaseStats(100, 100, 10, 5), "Terry", PartyRole.Tank, PartyPortrait.Tank,
+                        new SoundEffects("uhp", "beatbox2", "startled_cow")),
+                    new PartyMember(new BaseStats(35, 40, 30, 20, 2.33f), "Miriam", PartyRole.Damage,
+                        PartyPortrait.Mage, new SoundEffects("belch", "fireball", "startled_cow")),
+                    new PartyMember(new BaseStats(50, 20, 30, 5, 0.55f), "Rodney", PartyRole.Damage,
+                        PartyPortrait.Rogue, new SoundEffects("toa", "toa", "startled_cow")),
+                    new PartyMember(new BaseStats(80, 50, 30, 10, 1.1f), "Helen", PartyRole.Damage,
+                        PartyPortrait.Druid, new SoundEffects("uhp", "magic_missile", "startled_cow")),
                     player
                 );
             }
@@ -200,7 +210,7 @@ namespace LD50
             foreach (var name in partyMemberLayoutNames)
             {
                 var partyMember = this.party.GetMember(partyMemberIndex);
-                partyMember.Died += (member) =>
+                partyMember.Died += member =>
                 {
                     this.chat.AppendColoredString($"{member.Name} has died", Color.Gray);
                     if (CheckGameOverStatus())
@@ -231,9 +241,8 @@ namespace LD50
             }
             else
             {
-                game.StartCoroutine(battleSystem.PrimaryLoopCoroutine((uint)this.random.Next()));
+                game.StartCoroutine(battleSystem.PrimaryLoopCoroutine((uint) this.random.Next()));
             }
-
         }
 
         public IEnumerator<ICoroutineAction> GoBackToMainMenuAfterDelay(Scene game)
@@ -262,14 +271,14 @@ namespace LD50
                 return new NinepatchSheet(uiPatchImage, uiPatchImage.Bounds, new Rectangle(4, 4, 32, 32),
                     runtime.Painter);
             });
-            
+
             loader.AddMachinaAssetCallback("tooltip-patch", () =>
             {
                 var uiPatchImage = MachinaClient.Assets.GetTexture("tooltip-sheet");
                 return new NinepatchSheet(uiPatchImage, uiPatchImage.Bounds, new Rectangle(7, 7, 37, 37),
                     runtime.Painter);
             });
-            
+
             loader.AddMachinaAssetCallback("chat-patch", () =>
             {
                 var uiPatchImage = MachinaClient.Assets.GetTexture("chat-patch-sheet");

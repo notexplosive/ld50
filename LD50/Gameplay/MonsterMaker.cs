@@ -1,7 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Text;
 using Machina.Data;
+using Machina.Engine;
 
 namespace LD50.Gameplay
 {
@@ -15,6 +15,11 @@ namespace LD50.Gameplay
 
     public class MonsterMaker
     {
+        private readonly string[] plurality =
+        {
+            "gang", "squad", "gaggle", "gathering", "posse", "school", "pod"
+        };
+
         private readonly Dictionary<Difficulty, string[]> possibleAdjectives = new Dictionary<Difficulty, string[]>
         {
             {Difficulty.Easy, new[] {"Red", "Blue", "Green", "Yellow", "Sickly", "Wimpy", "Small", "Soft", "Stone"}},
@@ -22,8 +27,7 @@ namespace LD50.Gameplay
                 Difficulty.Medium,
                 new[]
                 {
-                    "Dark", "Purple", "Orange", "Pink", "Big", "Fire", "Frost", "Hairy", "Spiky", "Angry", "Metal",
-                    "Shiny"
+                    "Dark", "Large", "Fire", "Frost", "Hairy", "Spiky", "Angry", "Metal", "Shiny", "Chrome"
                 }
             },
             {
@@ -31,7 +35,7 @@ namespace LD50.Gameplay
                 new[]
                 {
                     "Mecha", "Huge", "Enchanted", "Giant", "Vermilion", "Celadon", "Amaranth", "Sapphire", "Ruby",
-                    "Deadly", "Titanium", "Glowing"
+                    "Deadly", "Titanium", "Glowing", "Undead"
                 }
             },
             {
@@ -39,21 +43,16 @@ namespace LD50.Gameplay
                 new[]
                 {
                     "Ultimate Final", "Super Mega Ultra", "Diamond", "Perfect", "First",
-                    "Forgotten", "Last", "Ancient"
+                    "Forgotten", "Last", "Ancient", "Five Dimensional", "Multi-threaded"
                 }
             }
         };
 
-        private readonly string[] plurality =
-        {
-            "gang", "squad", "gaggle", "gathering", "posse", "school", "pod"
-        };
-        
         private readonly string[] possibleNouns =
         {
             "Goblin", "Bandit", "Kobold", "Golem", "Snake", "Boar", "Wolf", "Trout", "Buff Cat", "Panther", "Lion",
             "Motorcycle", "Elemental", "Slime", "Squid", "Frog", "Toad", "Walking Mushroom", "Tree Person", "Spider",
-            "Dragon", "Centaur", "Crab", "Chicken"
+            "Dragon", "Centaur", "Crab", "Chicken", "Bee"
         };
 
         private readonly NoiseBasedRNG random;
@@ -66,24 +65,45 @@ namespace LD50.Gameplay
         public Encounter CreateEncounter(int level, BattleLogger logger)
         {
             var monsters = new List<Monster>();
-            
+
             var numberOfMonsters = GetNumberOfMonsters();
 
             if (TuningKnobs.GetDifficultyForLevel(level) == Difficulty.Boss)
             {
                 numberOfMonsters = 1;
             }
-            
+
             var monsterName = GetMonsterName(level);
 
             for (var i = 0; i < numberOfMonsters; i++)
             {
                 var monsterDamage = GetMonsterDamagePerHit(level, numberOfMonsters);
-                monsters.Add(new Monster(GetMonsterHealth(level, numberOfMonsters), monsterDamage,
+                monsters.Add(new Monster(GetMonsterSoundEffect(), GetMonsterHealth(level, numberOfMonsters), monsterDamage,
                     TuningKnobs.GetMonsterAttackDelay(level), monsterName));
             }
 
             return new Encounter(level, logger, monsters.ToArray());
+        }
+
+        private SoundEffects GetMonsterSoundEffect()
+        {
+            return new SoundEffects(GetHurtSoundEffect(), GetDealDamageSoundEffect(), GetDieSoundEffect());
+        }
+
+        private string GetDieSoundEffect()
+        {
+            return "monster-die";
+        }
+
+        private string GetDealDamageSoundEffect()
+        {
+            var array = new[] { "bass", "beatbox2", "blem", "clink", "blunthit" };
+            return this.random.GetRandomElement(array);
+        }
+
+        private string GetHurtSoundEffect()
+        {
+            return "hurt_" + MachinaClient.RandomDirty.Next(1, 5);
         }
 
         public string RandomPlurality()
@@ -105,15 +125,15 @@ namespace LD50.Gameplay
         {
             if (TuningKnobs.GetDifficultyForLevel(level) == Difficulty.Boss)
             {
-                return $"{GetBossName()}, The {GetAdjective(level)} {GetNoun()}";                
+                return $"{GetBossName()}, The {GetAdjective(level)} {GetNoun()}";
             }
-            
+
             return $"{GetAdjective(level)} {GetNoun()}";
         }
 
         private string GetBossName()
         {
-            var consonants = new[] { 'x', 'c', 'd', 'k', 'n', 'b', 'v', 'r', 'p', 'g' };
+            var consonants = new[] {'x', 'c', 'd', 'k', 'n', 'b', 'v', 'r', 'p', 'g'};
             var vowels = new[] {'a', 'e', 'o', 'u', '\''};
 
             this.random.Next(consonants.Length);
@@ -122,7 +142,7 @@ namespace LD50.Gameplay
             {
                 return consonants[this.random.Next(consonants.Length)].ToString();
             }
-            
+
             string Vowel()
             {
                 return vowels[this.random.Next(vowels.Length)].ToString();

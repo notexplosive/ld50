@@ -199,6 +199,9 @@ namespace LD50.Gameplay
                 InProgressSpell.Spell.Execute(InProgressSpell.TargetPartyMember, this.party);
                 InProgressSpell.Spell.Cooldown.Start(); // regular cooldown starts when you finish the spell
                 this.player.ConsumeMana(InProgressSpell.Spell.ManaCost);
+
+                MachinaClient.SoundEffectPlayer.PlaySound(InProgressSpell.Spell.SoundEffect);
+                
                 CancelInProgressSpell();
             }
 

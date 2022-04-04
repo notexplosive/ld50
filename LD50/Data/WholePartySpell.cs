@@ -6,7 +6,7 @@ namespace LD50.Data
 {
     public class WholePartySpell : ISpell 
     {
-        public WholePartySpell(string name, float castDuration, int manaCost, int healingAmountWhenComplete, IBuff buffAppliedWhenComplete, float cooldown, int keybind = 0, int frameIndex = 1)
+        public WholePartySpell(string name, float castDuration, int manaCost, int healingAmountWhenComplete, IBuff buffAppliedWhenComplete, float cooldown, int keybind = 0, int frameIndex = 1, string soundEffect = "heal_fast")
         {
             Name = name;
             ManaCost = manaCost;
@@ -14,6 +14,7 @@ namespace LD50.Data
             BuffAppliedWhenComplete = buffAppliedWhenComplete;
             Keybind = keybind;
             FrameIndex = frameIndex;
+            SoundEffect = soundEffect;
             CastDuration = castDuration;
             Cooldown = new Cooldown(cooldown);
         }
@@ -25,6 +26,7 @@ namespace LD50.Data
         public IBuff BuffAppliedWhenComplete { get; }
         public int Keybind { get; }
         public int FrameIndex { get; }
+        public string SoundEffect { get; }
         public Cooldown Cooldown { get; }
 
         public void Execute(PartyMember targetPartyMember, Party party)

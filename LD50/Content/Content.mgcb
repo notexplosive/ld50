@@ -112,3 +112,162 @@
 /processorParam:TextureFormat=Color
 /build:images/ui-patch-sheet.png
 
+#begin sounds/bass.ogg
+/importer:OggImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:sounds/bass.ogg
+
+#begin sounds/beatbox2.ogg
+/importer:OggImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:sounds/beatbox2.ogg
+
+#begin sounds/belch.ogg
+/importer:OggImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:sounds/belch.ogg
+
+#begin sounds/blem.ogg
+/importer:OggImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:sounds/blem.ogg
+
+#begin sounds/shield.ogg
+/importer:OggImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:sounds/shield.ogg
+
+#begin sounds/heal_over_time.ogg
+/importer:OggImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:sounds/heal_over_time.ogg
+
+#begin sounds/heal_slow.ogg
+/importer:OggImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:sounds/heal_slow.ogg
+
+#begin sounds/heal_fast.ogg
+/importer:OggImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:sounds/heal_fast.ogg
+
+#begin sounds/blunthit.ogg
+/importer:OggImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:sounds/blunthit.ogg
+
+#begin sounds/burp.ogg
+/importer:OggImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:sounds/burp.ogg
+
+#begin sounds/clink.ogg
+/importer:OggImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:sounds/clink.ogg
+
+#begin sounds/fart.ogg
+/importer:OggImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:sounds/fart.ogg
+
+#begin sounds/final_ouch.ogg
+/importer:OggImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:sounds/final_ouch.ogg
+
+#begin sounds/fireball.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:sounds/fireball.wav
+
+#begin sounds/fireball.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:sounds/fireball.wav
+
+#begin sounds/monster-die.ogg
+/importer:OggImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:sounds/monster-die.ogg
+
+#begin sounds/hurt_1.ogg
+/importer:OggImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:sounds/hurt_1.ogg
+
+#begin sounds/hurt_2.ogg
+/importer:OggImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:sounds/hurt_2.ogg
+
+#begin sounds/hurt_3.ogg
+/importer:OggImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:sounds/hurt_3.ogg
+
+#begin sounds/hurt_4.ogg
+/importer:OggImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:sounds/hurt_4.ogg
+
+#begin sounds/hurt_5.ogg
+/importer:OggImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:sounds/hurt_5.ogg
+
+#begin sounds/magic_missile.ogg
+/importer:OggImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:sounds/magic_missile.ogg
+
+#begin sounds/oa.ogg
+/importer:OggImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:sounds/oa.ogg
+
+#begin sounds/soundcredits.txt
+/copy:sounds/soundcredits.txt
+
+#begin sounds/startled_cow.ogg
+/importer:OggImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:sounds/startled_cow.ogg
+
+#begin sounds/toa.ogg
+/importer:OggImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:sounds/toa.ogg
+
+#begin sounds/uhp.ogg
+/importer:OggImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:sounds/uhp.ogg
+

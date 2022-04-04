@@ -32,9 +32,8 @@ namespace LD50.Gameplay
             yield return new WaitSeconds(5f);
             advisor.TakeDamage(15);
             chat.LogCombatEvent("The Advisor punches themself in the face.");
-            yield return new WaitSeconds(1f);
+            yield return new WaitSeconds(0.25f);
             Say("Ouch!");
-            MachinaClient.SoundEffectPlayer.PlaySound("ouch");
             
             yield return new WaitSeconds(5f);
             Say("OK, now that I've taken some damage, go ahead and heal me by hovering over my portrait and pressing 1.");
@@ -58,6 +57,9 @@ namespace LD50.Gameplay
             yield return new WaitSeconds(5f);
             Say("Go ahead and heal everyone back up, feel free to experiment with your different spells");
 
+            yield return new WaitSeconds(2.5f);
+            Say("Oh, by the way. You can press Escape to cancel out of the current spell your casting.");
+            
             yield return new WaitUntil(() =>
             {
                 foreach (var member in party.AllLivingMembers())
@@ -79,7 +81,7 @@ namespace LD50.Gameplay
             battle.FinishEncounter();
 
             yield return new WaitUntil(party.IsFullyRegenerated);
-            
+
             yield return new WaitSeconds(5f);
             Say("You may have noticed the sword icons in the dummy's portraits.");
             

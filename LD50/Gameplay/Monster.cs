@@ -10,14 +10,16 @@ namespace LD50.Gameplay
     {
         public static NoiseBasedRNG random = new NoiseBasedRNG(45678);
         private readonly float initialDelay;
+        public SoundEffects SoundEffects { get; }
         public int Health { get; private set; }
         public int DamagePerHit { get; }
         public float AttackDelay { get; }
         public bool IsDead => Health <= 0;
         public string Name { get; }
 
-        public Monster(int health, int damagePerHit, float attackDelay, string name = "Monster")
+        public Monster(SoundEffects soundEffects, int health, int damagePerHit, float attackDelay, string name = "Monster")
         {
+            SoundEffects = soundEffects;
             Health = health;
             DamagePerHit = damagePerHit;
             AttackDelay = attackDelay;
@@ -32,6 +34,7 @@ namespace LD50.Gameplay
             if (IsDead)
             {
                 encounter.Logger.LogHappy($"{attacker.Name} killed the {Name}.");
+                MachinaClient.SoundEffectPlayer.PlaySound(SoundEffects.Die);
             }
         }
 
@@ -61,6 +64,7 @@ namespace LD50.Gameplay
                     }
                     else
                     {
+                        MachinaClient.SoundEffectPlayer.PlaySound(SoundEffects.DealDamage);
                         target.TakeDamage(DamagePerHit);
                     }
 

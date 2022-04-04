@@ -8,9 +8,24 @@ using Microsoft.Xna.Framework;
 namespace LD50.Gameplay
 {
     public delegate void PartyMemberEvent(PartyMember member);
+
+    public readonly struct SoundEffects
+    {
+        public string TakeDamage { get; }
+        public string DealDamage { get; }
+        public string Die { get; }
+
+        public SoundEffects(string takeDamage, string dealDamage, string die)
+        {
+            TakeDamage = takeDamage;
+            DealDamage = dealDamage;
+            Die = die;
+        }
+    }
     
     public class PartyMember
     {
+        private readonly SoundEffects soundEffects;
         public PartyMemberStatus Status { get; private set; }
         public PartyRole Role { get; }
         public PartyPortrait Portrait { get; }
@@ -20,8 +35,9 @@ namespace LD50.Gameplay
 
         public event PartyMemberEvent Died;
 
-        public PartyMember(BaseStats baseStats, string name = "P.T. Member", PartyRole role = default, PartyPortrait portrait = PartyPortrait.Tank)
+        public PartyMember(BaseStats baseStats, string name = "P.T. Member", PartyRole role = default, PartyPortrait portrait = PartyPortrait.Tank, SoundEffects soundEffects = default)
         {
+            this.soundEffects = soundEffects;
             Status = new PartyMemberStatus(baseStats, new Buffs(), 0, baseStats.MaxMana);
             Role = role;
             Portrait = portrait;
@@ -36,7 +52,7 @@ namespace LD50.Gameplay
         {
             var nextStatus = Status.GetNext(dt, PendingHeals, PendingDamage, PendingSpentMana);
             var previousStatus = Status;
-
+            
             Status = nextStatus;
 
             PendingDamage = 0;
@@ -45,8 +61,16 @@ namespace LD50.Gameplay
             
             if (!previousStatus.IsDead && nextStatus.IsDead)
             {
+                MachinaClient.SoundEffectPlayer.PlaySound(this.soundEffects.Die);
                 Status.Buffs.Clear();
                 Died?.Invoke(this);
+            }
+            else
+            {
+                if (previousStatus.Health > nextStatus.Health)
+                {
+                    MachinaClient.SoundEffectPlayer.PlaySound(this.soundEffects.TakeDamage);
+                }
             }
         }
 
@@ -95,6 +119,7 @@ namespace LD50.Gameplay
                 var damage = Status.BaseStats.DamageOutput;
                 if (damage > 0)
                 {
+                    MachinaClient.SoundEffectPlayer.PlaySound(this.soundEffects.DealDamage, 0.25f);
                     monster.TakeDamage(damage, encounter, this);
                     
                     // spend mana
