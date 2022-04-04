@@ -162,6 +162,15 @@ namespace LD50.Renderer
                 new Point((int) (health.Rectangle.Width * this.partyMember.HealthPercent), health.Rectangle.Height));
             spriteBatch.FillRectangle(healthFill, new Color(115, 23, 45), transform.Depth - 5);
             spriteBatch.DrawRectangle(health.Rectangle, Color.Black, 2f, transform.Depth - 10);
+            var healthBoundedText = new BoundedText(health.Rectangle.Size, Alignment.Center, Overflow.Ignore,
+                FormattedText.FromString(
+                    $"{this.partyMember.Status.Health} / {this.partyMember.Status.BaseStats.MaxHealth}",
+                    MachinaClient.Assets.GetSpriteFont("UIFont"), Color.White));
+            foreach (var item in healthBoundedText.GetRenderedText())
+            {
+                item.Draw(spriteBatch, health.PositionRelativeToRoot, 0f, transform.Depth - 20);
+            }
+            
 
             // duplicate code alert!! should have a DrawFilledBar helper method
             var manaFill = new Rectangle(mana.Rectangle.Location,
